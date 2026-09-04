@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uji Kompetensi Manajerial &amp; Sosial Kultural — Level 4</title>
+<style>
+:root{
+  --merah:#ED1C24; --maroon:#9A0501; --tinta:#231F20; --kertas:#FFFBEE;
+  --amber:#FEBD26; --jingga:#C45824; --biru:#2892C6; --hijau:#73B24A;
+  --garis:#E2DBC4; --redup:#6B6558; --putih:#fff;
+  --head:"Franklin Gothic Medium Cond","Arial Narrow","Segoe UI",Helvetica,sans-serif;
+  --badan:Calibri,"Segoe UI",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--kertas);color:var(--tinta);font-family:var(--badan);font-size:16.5px;line-height:1.6}
+a{color:var(--maroon)}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px 80px}
+
+/* ---- kepala ---- */
+header.top{background:var(--tinta);color:#fff;padding:22px 0 0}
+header.top .wrap{padding-bottom:0}
+.judul{font-family:var(--head);font-size:31px;line-height:1.1;letter-spacing:.01em;margin:0 0 4px;font-weight:600}
+.subjudul{color:#C9C3B4;font-size:14.5px;margin:0 0 16px;max-width:60ch}
+.tabs{display:flex;gap:2px}
+.tab{font-family:var(--head);font-size:16px;letter-spacing:.02em;background:#3A3532;color:#D8D2C4;border:0;padding:11px 20px 10px;cursor:pointer;border-radius:6px 6px 0 0}
+.tab[aria-selected="true"]{background:var(--kertas);color:var(--tinta)}
+.tab:focus-visible{outline:3px solid var(--amber);outline-offset:-3px}
+
+/* ---- panel kendali ---- */
+.kendali{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:16px 0 12px;border-bottom:1px solid var(--garis)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13.5px;background:transparent;border:1px solid var(--garis);color:var(--redup);padding:4px 11px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--tinta);border-color:var(--tinta);color:#fff}
+.chip:focus-visible{outline:2px solid var(--merah);outline-offset:1px}
+.spacer{flex:1}
+.mini{font-size:13.5px;color:var(--redup)}
+.tombol{font:inherit;font-size:14px;background:var(--putih);border:1px solid var(--garis);padding:6px 13px;border-radius:6px;cursor:pointer;color:var(--tinta)}
+.tombol:hover{border-color:var(--tinta)}
+.tombol:focus-visible{outline:2px solid var(--merah);outline-offset:1px}
+
+/* ---- kemajuan ---- */
+.bar{height:5px;background:#EFE9D6;border-radius:3px;overflow:hidden;margin:14px 0 4px}
+.bar i{display:block;height:100%;background:var(--merah);width:0;transition:width .25s}
+.barinfo{display:flex;justify-content:space-between;font-size:13px;color:var(--redup);margin-bottom:18px}
+
+/* ---- kartu soal ---- */
+.kartu{background:var(--putih);border:1px solid var(--garis);border-radius:10px;padding:24px 26px 26px}
+.kepala-soal{display:flex;align-items:baseline;gap:12px;margin-bottom:14px}
+.nomor{font-family:var(--head);font-size:26px;color:var(--merah);line-height:1}
+.label{font-size:12.5px;letter-spacing:.03em;color:var(--redup);border:1px solid var(--garis);padding:2px 9px;border-radius:999px}
+.stem{font-size:17px;margin:0 0 20px}
+.opsi{display:flex;flex-direction:column;gap:9px}
+.op{display:flex;gap:13px;align-items:flex-start;text-align:left;font:inherit;background:var(--putih);border:1px solid var(--garis);border-radius:8px;padding:12px 15px;cursor:pointer;width:100%;transition:border-color .12s,background .12s}
+.op:hover:not(:disabled){border-color:var(--tinta);background:#FFFDF6}
+.op:disabled{cursor:default}
+.op:focus-visible{outline:2px solid var(--merah);outline-offset:1px}
+.huruf{font-family:var(--head);font-size:15px;width:24px;height:24px;flex:0 0 24px;border-radius:50%;border:1px solid var(--garis);display:grid;place-items:center;margin-top:1px}
+.op.benar{border-color:var(--hijau);background:#F2F9EC}
+.op.benar .huruf{background:var(--hijau);border-color:var(--hijau);color:#fff}
+.op.salah{border-color:var(--merah);background:#FDF0F0}
+.op.salah .huruf{background:var(--merah);border-color:var(--merah);color:#fff}
+.op.pudar{opacity:.55}
+
+/* ---- ulasan ---- */
+.ulasan{margin-top:22px;border-top:2px solid var(--tinta);padding-top:18px}
+.vonis{font-family:var(--head);font-size:20px;margin:0 0 12px}
+.vonis.ok{color:#4C7A2B}
+.vonis.no{color:var(--maroon)}
+.blok{margin:0 0 14px}
+.blok h4{font-family:var(--head);font-size:14px;letter-spacing:.04em;color:var(--redup);margin:0 0 4px;font-weight:600}
+.blok p{margin:0}
+.kunci{background:#FFF6DA;border-left:3px solid var(--amber);padding:10px 14px;border-radius:0 6px 6px 0}
+.daftar{list-style:none;margin:0;padding:0}
+.daftar li{display:flex;gap:10px;padding:7px 0;border-top:1px solid var(--garis);font-size:15.5px}
+.daftar li:first-child{border-top:0}
+.daftar b{font-family:var(--head);color:var(--merah);flex:0 0 16px}
+.daftar li.iskunci b{color:var(--hijau)}
+
+/* ---- navigasi ---- */
+.nav{display:flex;gap:10px;align-items:center;margin-top:22px}
+.nav .tombol{padding:9px 18px}
+.utama{background:var(--merah);border-color:var(--merah);color:#fff;font-family:var(--head);font-size:15px;letter-spacing:.02em}
+.utama:hover{background:var(--maroon);border-color:var(--maroon)}
+
+/* ---- gambar figural ---- */
+.figbaris{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;background:#FFFDF6;border:1px solid var(--garis);border-radius:8px;padding:16px;margin-bottom:18px}
+.fig{width:82px;height:82px;flex:0 0 82px}
+.fig svg{width:100%;height:100%;display:block}
+.tanya{font-family:var(--head);font-size:34px;color:var(--merah);width:82px;height:82px;display:grid;place-items:center;border:2px dashed var(--merah);border-radius:8px}
+.sama{font-family:var(--head);font-size:22px;color:var(--redup);padding:0 2px}
+.opsifig{display:flex;flex-wrap:wrap;gap:10px}
+.opfig{background:var(--putih);border:1px solid var(--garis);border-radius:8px;padding:10px 10px 6px;cursor:pointer;width:106px;text-align:center}
+.opfig:hover:not(:disabled){border-color:var(--tinta)}
+.opfig:disabled{cursor:default}
+.opfig:focus-visible{outline:2px solid var(--merah);outline-offset:1px}
+.opfig .huruf{margin:6px auto 0}
+.opfig.benar{border-color:var(--hijau);background:#F2F9EC}
+.opfig.salah{border-color:var(--merah);background:#FDF0F0}
+.matriks{display:grid;grid-template-columns:repeat(3,82px);gap:8px;justify-content:center;background:#FFFDF6;border:1px solid var(--garis);border-radius:8px;padding:16px;margin-bottom:18px}
+.sel{width:82px;height:82px;border:1px solid var(--garis);border-radius:6px;background:var(--putih)}
+.sel.kosong{border:2px dashed var(--merah);display:grid;place-items:center;font-family:var(--head);font-size:30px;color:var(--merah)}
+svg .goresan{fill:none;stroke:var(--tinta);stroke-width:2.4;stroke-linejoin:round}
+svg .isian{fill:var(--merah)}
+svg .titik{fill:var(--tinta)}
+
+/* ---- ringkasan ---- */
+.ringkas{background:var(--putih);border:1px solid var(--garis);border-radius:10px;padding:24px 26px;margin-top:18px}
+.ringkas h3{font-family:var(--head);font-size:22px;margin:0 0 4px}
+.skor{font-family:var(--head);font-size:46px;color:var(--merah);line-height:1;margin:10px 0 2px}
+table{border-collapse:collapse;width:100%;margin-top:14px;font-size:15px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--garis)}
+th{font-family:var(--head);font-weight:600;font-size:13.5px;letter-spacing:.03em;color:var(--redup)}
+td.angka,th.angka{text-align:right;white-space:nowrap}
+.kosongpesan{padding:40px 0;text-align:center;color:var(--redup)}
+@media (max-width:640px){
+  .judul{font-size:25px}.kartu{padding:18px 16px 20px}.wrap{padding:0 14px 60px}
+  .fig,.tanya,.sel{width:64px;height:64px;flex-basis:64px}.matriks{grid-template-columns:repeat(3,64px)}
+  .opfig{width:88px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <h1 class="judul">Uji Kompetensi Manajerial &amp; Sosial Kultural — Level 4</h1>
+    <p class="subjudul">150 soal latihan berkonteks BPS, statistisi, dan pranata komputer. Setiap jawaban langsung diberi ulasan: kunci, alasan, kata kunci, dan sebab pilihan lain gugur.</p>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-bank="A">9 Kompetensi · 100 soal</button>
+      <button class="tab" role="tab" aria-selected="false" data-bank="B">Potensi figural · 50 soal</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="kendali">
+    <div class="chips" id="chips"></div>
+    <span class="spacer"></span>
+    <button class="tombol" id="acak">Acak urutan</button>
+    <button class="tombol" id="ulang">Mulai ulang</button>
+  </div>
+
+  <div class="bar"><i id="isibar"></i></div>
+  <div class="barinfo"><span id="posisi"></span><span id="nilai"></span></div>
+
+  <div id="panggung"></div>
+</main>
+
+<script>
+// Bagian 1 — Integritas (1) & Kerjasama (2)
+const A1 = [
+{c:1,q:"Anda Koordinator Fungsi di BPS Provinsi. Hasil pemeriksaan silang menunjukkan sebagian dokumen SE2026 di dua kabupaten diisi tanpa kunjungan lapangan. Kepala BPS Kabupaten meminta persoalan diselesaikan diam-diam agar nama daerah tidak tercoreng. Tindakan yang paling menggambarkan Integritas level 4 adalah…",
+o:["Menegur langsung petugas yang bersangkutan dan meminta mereka mengulang pencacahan agar target tetap tercapai",
+"Membawa temuan ke forum pimpinan provinsi, menetapkan mekanisme pemeriksaan kualitas berjenjang yang berlaku bagi seluruh kabupaten/kota, serta menerapkan sanksi yang sama tanpa pengecualian",
+"Melaporkan temuan ke BPS RI dan menunggu instruksi resmi sebelum mengambil tindakan apa pun di daerah",
+"Mengingatkan seluruh koordinator kabupaten dalam grup daring agar tidak mengulangi praktik serupa pada periode berikutnya"],
+a:1,k:"Menciptakan sistem kepatuhan yang berlaku se-instansi, bukan menyelesaikan kasus per orang.",
+w:"Level 4 menuntut Anda menciptakan situasi kerja yang mendorong seluruh pemangku kepentingan mematuhi nilai dan etika organisasi, serta berani menindak penyimpangan pada lingkup setingkat instansi meskipun ada risiko. Menetapkan mekanisme pengendalian mutu yang berlaku untuk semua kabupaten/kota sekaligus menegakkan sanksi tanpa pengecualian adalah bentuk konkretnya.",
+x:["Perbaikan pada tataran individu/kelompok kecil — ciri level 2–3, tidak mengubah kondisi yang memungkinkan pelanggaran terulang.",
+"Kunci. Membangun mekanisme se-instansi + menegakkan sanksi tanpa pandang bulu = indikator 4.1 dan 4.3.",
+"Menunda tindakan sambil menunggu instruksi justru menghindari risiko; level 4 berani mengambil sikap lebih dulu dalam kewenangannya.",
+"Mengingatkan rekan kerja agar bertindak sesuai etika adalah perilaku level 2, bukan menciptakan situasi kerja yang mengikat."]},
+
+{c:1,q:"Dalam proses pengadaan perangkat pengolahan data, seorang penyedia menyampaikan 'tanda terima kasih' kepada Anda selaku pejabat teknis. Anda menolaknya. Langkah lanjutan yang paling mencerminkan Integritas level 4 adalah…",
+o:["Menyimpan bukti penawaran tersebut untuk berjaga-jaga apabila suatu saat diperlukan",
+"Menyampaikan kejadian itu kepada atasan langsung agar penyedia tersebut tidak lagi diundang pada paket berikutnya",
+"Melaporkan kejadian melalui saluran resmi, lalu mendorong penerapan pakta integritas dan deklarasi benturan kepentingan pada seluruh paket pengadaan di satuan kerja, termasuk memaparkan kasus ini sebagai bahan pembelajaran",
+"Menolak secara sopan dan meneruskan proses pengadaan sesuai jadwal agar pelayanan tidak terganggu"],
+a:2,k:"Menolak, melaporkan, lalu mengubahnya menjadi standar etika yang berlaku bagi seluruh unit.",
+w:"Indikator 4.2 berbunyi mendukung dan menerapkan prinsip moral serta standar etika yang tinggi dan berani menanggung konsekuensinya. Menolak saja bersifat pribadi (level 1); level 4 menaikkannya menjadi instrumen pengendalian yang berlaku umum dan berani membuka kasus meski berisiko tidak nyaman.",
+x:["Menyimpan bukti tanpa melaporkan bukan tindakan integritas; justru membiarkan potensi pelanggaran berulang.",
+"Terbatas pada penyelesaian kasus dan aktor tunggal, belum menyentuh sistem pengendalian instansi.",
+"Kunci. Pelaporan resmi + pakta integritas menyeluruh + keberanian membuka kasus = standar etika tingkat instansi.",
+"Perilaku level 1: bertindak jujur dalam kapasitas pribadi, tanpa dampak pada organisasi."]},
+
+{c:1,q:"Menjelang rilis Berita Resmi Statistik, seorang pejabat daerah meminta angka pertumbuhan ekonomi disampaikan lebih awal 'sebagai bahan rapat pimpinan'. Ia menekankan hubungan baik kedua instansi. Respons level 4 adalah…",
+o:["Memberikan angka sementara secara lisan dengan catatan bahwa data masih dapat berubah",
+"Menolak permintaan dan menjelaskan aturan embargo, kemudian menyusun protokol pra-rilis yang disepakati bersama pemangku kepentingan sehingga kebutuhan mereka terlayani tanpa melanggar aturan",
+"Menolak permintaan dan menyarankan pejabat tersebut menunggu jadwal rilis resmi",
+"Meneruskan permintaan kepada Kepala BPS Provinsi agar keputusan berada di tangan pimpinan"],
+a:1,k:"Menolak sekaligus menciptakan situasi kerja yang membuat semua pihak patuh pada aturan yang sama.",
+w:"Indikator 4.1 menuntut terciptanya situasi kerja yang mendorong seluruh pemangku kepentingan — termasuk instansi lain — mematuhi norma organisasi. Menolak sambil membangun protokol yang mengakomodasi kebutuhan mereka secara sah adalah bentuk tertinggi dari empat pilihan ini.",
+x:["Angka sementara tetap merupakan pelanggaran embargo; kualifikasi 'dapat berubah' tidak menghapus pelanggaran.",
+"Kunci. Penolakan disertai pembangunan protokol bersama = kepatuhan yang melembaga, bukan sekadar penolakan sesaat.",
+"Benar secara etika tetapi berhenti pada tataran pribadi/individu — ciri level 1–2.",
+"Mendelegasikan keputusan bukan wujud keberanian mengambil sikap pada lingkup kewenangan sendiri."]},
+
+{c:1,q:"Anda mengetahui seorang koordinator senior yang selama ini menjadi mentor Anda menyusun pertanggungjawaban perjalanan dinas pengawasan lapangan yang tidak pernah dilaksanakan. Sikap yang mencerminkan Integritas level 4 adalah…",
+o:["Berbicara empat mata dan memintanya memperbaiki dokumen sebelum diperiksa pihak lain",
+"Membiarkan proses berjalan karena pemeriksaan internal pasti akan menemukannya sendiri",
+"Menyampaikan temuan melalui mekanisme pengawasan internal dan mendorong penertiban pertanggungjawaban di seluruh unit, dengan kesiapan menanggung risiko atas hubungan pribadi",
+"Mencatat temuan sebagai bahan evaluasi akhir tahun bersama temuan-temuan lain"],
+a:2,k:"Berani mengoreksi penyimpangan pada lingkup instansi meskipun ada risiko personal.",
+w:"Indikator 4.3 secara eksplisit menyebut keberanian mengoreksi atau menindak penyimpangan kode etik pada lingkup setingkat instansi meskipun ada risiko. Kedekatan personal justru menjadi ujian nyata dari indikator ini.",
+x:["Penyelesaian personal menutup kasus dari mekanisme pengawasan; ini menghindari risiko, bukan menanggungnya.",
+"Pembiaran adalah kebalikan integritas pada level mana pun.",
+"Kunci. Menempuh mekanisme resmi + perbaikan menyeluruh + siap menanggung konsekuensi hubungan.",
+"Menunda ke evaluasi akhir tahun memperkecil urgensi dan membuat penyimpangan berlanjut."]},
+
+{c:1,q:"Penandatanganan pakta integritas di satuan kerja Anda berjalan sebagai kegiatan seremonial tahunan tanpa pengaruh nyata pada perilaku pegawai. Sebagai pejabat administrator, tindakan level 4 yang paling tepat adalah…",
+o:["Menambahkan materi etika ASN pada rapat bulanan agar pegawai lebih sering diingatkan",
+"Meminta setiap koordinator memastikan anggotanya memahami isi pakta integritas dan menegur yang melanggar",
+"Mengaitkan pakta integritas dengan pengendalian nyata — indikator kepatuhan yang dipantau berkala, keteladanan pimpinan, apresiasi bagi unit patuh, dan penindakan konsisten — sehingga terbentuk iklim kerja yang menuntut kepatuhan",
+"Mengusulkan kepada BPS RI agar format pakta integritas diperbaiki karena kurang efektif"],
+a:2,k:"Mengubah simbol menjadi iklim kerja: pantau, teladani, apresiasi, tindak.",
+w:"Kata kunci level 4 adalah 'menciptakan situasi kerja'. Situasi kerja terbentuk dari mekanisme pemantauan, keteladanan, penghargaan, dan konsekuensi yang berjalan bersama, bukan dari frekuensi pengingatan.",
+x:["Sosialisasi berulang tetap berada pada ranah mengingatkan (level 2).",
+"Memastikan anggota yang dipimpin bertindak sesuai etika adalah indikator level 3 di unit kerja masing-masing.",
+"Kunci. Membangun ekosistem kepatuhan lintas unit = indikator 4.1.",
+"Mengusulkan perbaikan ke tingkat pusat memindahkan tanggung jawab, bukan menciptakan situasi kerja di instansi sendiri."]},
+
+{c:1,q:"Tim Anda mengembangkan aplikasi monitoring lapangan. Menjelang peluncuran, Anda mengetahui salah satu pustaka dan perangkat lunak desain yang dipakai tidak berlisensi resmi, sementara peluncuran tinggal tiga hari. Tindakan level 4 adalah…",
+o:["Meluncurkan aplikasi sesuai jadwal dan mengganti komponen tidak berlisensi pada versi berikutnya",
+"Menunda peluncuran, mengganti seluruh komponen tidak berlisensi, dan menetapkan prosedur pemeriksaan lisensi sebagai syarat rilis bagi seluruh pengembangan aplikasi di satuan kerja",
+"Meminta pengembang menghapus atribut yang menunjukkan asal pustaka agar tidak terdeteksi",
+"Melanjutkan peluncuran karena aplikasi digunakan internal dan tidak diperjualbelikan"],
+a:1,k:"Menanggung konsekuensi keterlambatan demi standar etika, lalu melembagakannya.",
+w:"Indikator 4.2 menekankan penerapan standar etika tinggi dan keberanian menanggung konsekuensinya. Menunda peluncuran adalah konsekuensi yang diterima; menetapkan prosedur pemeriksaan lisensi untuk semua pengembangan adalah dimensi instansinya.",
+x:["Menunda perbaikan berarti sengaja merilis produk yang melanggar; standar etika dikompromikan demi jadwal.",
+"Kunci. Berani menanggung konsekuensi + membangun kendali rilis se-instansi.",
+"Menyembunyikan jejak pelanggaran adalah pelanggaran yang lebih berat.",
+"Penggunaan internal tidak menghapus kewajiban lisensi; rasionalisasi ini justru menurunkan standar etika."]},
+
+{c:1,q:"Keputusan Anda mempercepat migrasi basis data pengolahan menyebabkan sebagian entri hilang dan pekerjaan tiga kabupaten harus diulang. Rapat evaluasi dihadiri seluruh pimpinan unit. Perilaku level 4 adalah…",
+o:["Menjelaskan bahwa risiko tersebut sudah diperhitungkan dan kesalahan terjadi pada tahap pelaksanaan teknis",
+"Menyampaikan permohonan maaf secara tertutup kepada tiga kepala kabupaten yang terdampak",
+"Menyatakan secara terbuka bahwa keputusan itu keputusan Anda, memaparkan dampak apa adanya, menanggung konsekuensinya, dan mengusulkan pengendalian perubahan yang mengikat seluruh unit",
+"Meminta tim menyusun kronologi teknis terlebih dahulu agar pembahasan tidak mengarah pada pencarian kesalahan"],
+a:2,k:"Bertanggung jawab terbuka atas keputusan beserta risikonya, di forum instansi.",
+w:"Definisi Integritas mencakup bertanggung jawab atas tindakan atau keputusan beserta risiko yang menyertainya, dan level 4 menambahkan keberanian menanggung konsekuensi. Pengakuan terbuka di forum pimpinan disertai usul perbaikan sistem adalah bentuk paling utuh.",
+x:["Mengalihkan tanggung jawab ke pelaksana teknis adalah penghindaran, bukan integritas.",
+"Permintaan maaf tertutup meredam risiko personal namun tidak memperbaiki pengendalian di tingkat instansi.",
+"Kunci. Akuntabilitas terbuka + kesediaan menanggung konsekuensi + perbaikan sistemik.",
+"Menunda pembahasan dengan alasan prosedural berpotensi mengaburkan tanggung jawab."]},
+
+{c:1,q:"Mitra pengolahan dokumen memerlukan akses ke basis data untuk mempercepat pekerjaan. Salah satu koordinator sudah memberikan akun dengan hak akses penuh tanpa perjanjian kerahasiaan. Tindakan level 4 adalah…",
+o:["Meminta koordinator tersebut segera mengganti kata sandi akun yang telanjur diberikan",
+"Membatasi hak akses akun menjadi hanya-baca sampai pekerjaan mitra selesai",
+"Mencabut akses, menegakkan kewajiban perjanjian kerahasiaan dan pemberian hak akses berjenjang bagi seluruh mitra di satuan kerja, serta menjadikan pelanggaran ini bahan penegakan disiplin",
+"Melaporkan kejadian kepada pengelola basis data pusat agar ditindaklanjuti sesuai kewenangan mereka"],
+a:2,k:"Menutup celah sekaligus menegakkan aturan kerahasiaan data se-instansi.",
+w:"Kerahasiaan data responden adalah norma tertinggi di BPS. Level 4 tidak berhenti pada penanganan teknis satu akun, melainkan menciptakan aturan main yang mengikat seluruh mitra dan menindak pelanggaran yang sudah terjadi.",
+x:["Penggantian kata sandi hanya memutus akses, tidak mencegah pengulangan oleh unit lain.",
+"Pembatasan hak akses tetap membiarkan data rahasia diakses tanpa dasar perjanjian.",
+"Kunci. Pencabutan akses + aturan menyeluruh + penegakan disiplin = indikator 4.1 dan 4.3.",
+"Menyerahkan sepenuhnya ke pusat mengabaikan kewenangan dan tanggung jawab Anda di instansi sendiri."]},
+
+{c:1,q:"Beredar laporan bahwa sejumlah petugas mitra meminta imbalan kepada responden usaha dengan dalih 'uang lelah'. Laporan datang dari dua kabupaten berbeda. Sebagai pejabat provinsi, tindakan level 4 adalah…",
+o:["Meminta kedua BPS Kabupaten memanggil petugas terkait dan menghentikan penugasannya",
+"Menyusun surat edaran larangan sekaligus mekanisme pengaduan responden, menegakkan sanksi pada kasus yang terbukti, dan memasukkan klausul etika ke dalam kontrak seluruh mitra provinsi",
+"Menambahkan materi etika petugas pada pelatihan periode pencacahan berikutnya",
+"Mengklarifikasi kepada responden bahwa BPS tidak pernah memungut biaya apa pun"],
+a:1,k:"Menindak kasus dan sekaligus memasang pengendalian pada seluruh rantai mitra.",
+w:"Level 4 menggabungkan penindakan atas penyimpangan (4.3) dengan penciptaan situasi kerja yang mendorong seluruh pemangku kepentingan patuh (4.1). Mekanisme pengaduan responden dan klausul kontrak adalah pengendalian yang bertahan setelah kasus selesai.",
+x:["Penindakan lokal per kasus adalah tanggung jawab level 3 di unit masing-masing.",
+"Kunci. Sanksi + kanal pengaduan + klausul kontrak menyeluruh.",
+"Menunda ke pelatihan berikutnya membiarkan pelanggaran berjalan pada periode berjalan.",
+"Klarifikasi kepada responden penting, tetapi bersifat komunikatif dan tidak menghentikan penyimpangan."]},
+
+{c:1,q:"Atasan meminta Anda menaikkan angka progres pencacahan pada bahan paparan pimpinan pusat 'agar tidak menjadi sorotan', dengan janji akan dikejar minggu berikutnya. Respons level 4 adalah…",
+o:["Menyajikan angka yang diminta dengan catatan kaki bahwa data bersifat sementara",
+"Menyajikan angka apa adanya disertai analisis penyebab dan rencana mitigasi yang terukur, serta menjelaskan kepada atasan risiko pelaporan yang tidak akurat bagi kredibilitas instansi",
+"Menyajikan angka apa adanya tanpa penjelasan tambahan karena data harus berbicara sendiri",
+"Meminta unit lain memverifikasi ulang angka agar diperoleh capaian yang lebih tinggi"],
+a:1,k:"Jujur pada data sekaligus memberi jalan keluar yang menjaga kredibilitas instansi.",
+w:"Integritas mencakup kejujuran dalam hubungan dengan manajemen. Level 4 tidak sekadar menolak, tetapi berani menyampaikan risiko kepada atasan dan menawarkan solusi sehingga standar etika tetap tegak tanpa merusak pencapaian organisasi.",
+x:["Catatan kaki tidak menghapus fakta bahwa angka yang disajikan tidak benar.",
+"Kunci. Kejujuran + keberanian menyampaikan risiko + solusi mitigasi.",
+"Jujur namun pasif; belum menunjukkan keberanian berargumentasi dan menanggung konsekuensi.",
+"Verifikasi ulang yang diarahkan pada hasil tertentu adalah manipulasi berbungkus prosedur."]},
+
+{c:1,q:"Sistem pengaduan internal di satuan kerja jarang digunakan karena pegawai khawatir identitasnya diketahui. Sebagai pejabat administrator, langkah level 4 yang paling tepat adalah…",
+o:["Mengumumkan kembali keberadaan kanal pengaduan pada apel pegawai setiap bulan",
+"Menyediakan kanal pelaporan anonim yang dikelola independen, menindaklanjuti setiap laporan secara terdokumentasi, melindungi pelapor, dan mengumumkan ringkasan tindak lanjut secara berkala",
+"Meminta setiap koordinator menampung keluhan anggotanya lalu meneruskannya kepada pimpinan",
+"Menunggu sampai ada laporan masuk agar penanganan tidak bersifat mengada-ada"],
+a:1,k:"Rasa aman melapor dibangun oleh mekanisme, perlindungan, dan bukti tindak lanjut.",
+w:"Menciptakan situasi kerja yang mendorong kepatuhan (4.1) berarti membangun kondisi yang membuat orang berani menegakkan aturan. Anonimitas, perlindungan pelapor, dan transparansi tindak lanjut adalah tiga syarat yang mengubah kanal formal menjadi kanal yang dipercaya.",
+x:["Pengumuman berulang tidak menghilangkan sumber keengganan, yaitu rasa tidak aman.",
+"Kunci. Mekanisme independen + perlindungan pelapor + transparansi hasil.",
+"Menyalurkan lewat atasan langsung justru memperbesar kekhawatiran bila yang dilaporkan adalah atasan.",
+"Sikap menunggu bertentangan dengan peran menciptakan situasi kerja."]},
+
+{c:2,q:"Fungsi Statistik Produksi, Distribusi, dan Sosial di BPS Provinsi sama-sama mengajukan permintaan tenaga pengolahan pada bulan yang sama, sementara jumlah petugas terbatas. Ketiganya mengklaim kegiatan masing-masing paling mendesak. Tindakan Kerjasama level 4 adalah…",
+o:["Membagi jumlah petugas secara merata agar tidak ada fungsi yang merasa dianakemaskan",
+"Mendahulukan kegiatan dengan tenggat paling dekat dan menjelaskan alasannya kepada fungsi lain",
+"Memfasilitasi forum bersama untuk memetakan beban dan tenggat seluruh kegiatan, lalu menyepakati penjadwalan dan pemanfaatan tenaga bersama yang menguntungkan capaian instansi secara keseluruhan",
+"Meminta masing-masing fungsi merekrut tenaga tambahan dari anggaran kegiatannya sendiri"],
+a:2,k:"Memfasilitasi kepentingan berbeda antar unit sehingga tercipta sinergi bagi target instansi.",
+w:"Indikator 4.2 menyebut memfasilitasi kepentingan yang berbeda dari unit kerja lain sehingga tercipta sinergi untuk pencapaian target organisasi. Titik ukurnya adalah capaian instansi, bukan keadilan pembagian atau kecepatan penyelesaian satu kegiatan.",
+x:["Pemerataan mekanis mengabaikan perbedaan beban dan tenggat; adil belum tentu sinergis.",
+"Keputusan prioritas sepihak menyelesaikan konflik tetapi tidak membangun mekanisme kerja bersama.",
+"Kunci. Forum bersama + kesepakatan pemanfaatan sumber daya bersama = sinergi antar unit.",
+"Mendorong setiap unit berjalan sendiri justru meniadakan sinergi dan memboroskan sumber daya."]},
+
+{c:2,q:"Jadwal pencacahan Susenas beririsan dengan tahap akhir pengawasan SE2026. Petugas di lapangan sebagian besar orang yang sama, dan dua koordinator saling menyalahkan atas keterlambatan. Langkah level 4 adalah…",
+o:["Meminta kedua koordinator menyusun jadwal masing-masing dan menyerahkan penyelesaian kepada petugas di lapangan",
+"Menyusun peta beban petugas lintas kegiatan bersama kedua koordinator, menyepakati urutan prioritas dan mekanisme berbagi petugas, serta memantau pelaksanaannya sebagai satu kesatuan target provinsi",
+"Menambah honor petugas agar bersedia bekerja pada dua kegiatan sekaligus",
+"Mengusulkan penundaan salah satu kegiatan kepada BPS RI"],
+a:1,k:"Satu peta beban, satu kesepakatan, satu target instansi.",
+w:"Sinergi antar unit kerja di lingkup instansi (4.1) diwujudkan dengan menyatukan perencanaan sumber daya yang selama ini terpisah. Pemantauan bersama memastikan kesepakatan tidak berhenti di atas kertas.",
+x:["Melempar penyelesaian ke lapangan membiarkan konflik terjadi pada tingkat pelaksana.",
+"Kunci. Peta beban lintas kegiatan + mekanisme berbagi petugas + pemantauan terpadu.",
+"Insentif menambah motivasi tetapi tidak menyelesaikan benturan jadwal dan kapasitas.",
+"Penundaan kegiatan bukan kewenangan provinsi dan menghindari persoalan koordinasi internal."]},
+
+{c:2,q:"Penilaian kinerja di satuan kerja Anda seluruhnya berbasis capaian individu, sehingga pegawai enggan membantu pekerjaan unit lain. Sebagai pejabat administrator, langkah Kerjasama level 4 adalah…",
+o:["Mengimbau pegawai agar lebih peduli terhadap pekerjaan rekan di unit lain",
+"Memberikan penghargaan kepada pegawai yang paling sering membantu unit lain setiap semester",
+"Mengembangkan sistem penilaian dan penghargaan yang memuat sasaran bersama antar unit, sehingga kontribusi lintas unit terekam, dinilai, dan diapresiasi secara terlembaga",
+"Menugaskan pegawai secara bergiliran ke unit lain agar terbiasa bekerja lintas bidang"],
+a:2,k:"Mengembangkan sistem yang menghargai kerja sama antar unit.",
+w:"Indikator 4.3 secara harfiah menyebut mengembangkan sistem yang menghargai kerja sama antar unit dan memberikan dukungan untuk memastikan tercapainya sinergi. Perubahan pada instrumen penilaian mengubah perilaku secara berkelanjutan.",
+x:["Imbauan tidak mengubah insentif yang menjadi akar persoalan.",
+"Penghargaan individual sporadis belum menjadi sistem dan masih bergantung pada penilaian subjektif.",
+"Kunci. Sasaran bersama masuk ke dalam sistem penilaian dan penghargaan.",
+"Rotasi menambah pengalaman lintas bidang tetapi tidak menghargai kerja sama secara terukur."]},
+
+{c:2,q:"Setiap fungsi di BPS Provinsi memiliki basis data sendiri dengan format berbeda, sehingga penyusunan bahan pimpinan selalu memakan waktu lama dan angkanya kerap tidak konsisten. Tindakan level 4 adalah…",
+o:["Meminta setiap fungsi mengirimkan datanya dalam format seragam setiap awal bulan",
+"Membangun forum walidata internal dan tata kelola data bersama lintas fungsi, dengan repositori tunggal, kesepakatan definisi, dan penanggung jawab di tiap unit",
+"Menugaskan tim teknologi informasi menggabungkan seluruh basis data yang ada",
+"Menyusun buku pedoman format data dan membagikannya kepada seluruh fungsi"],
+a:1,k:"Sinergi antar unit dibangun lewat tata kelola bersama, bukan permintaan data berulang.",
+w:"Membangun sinergi antar unit kerja di lingkup instansi (4.1) berarti menciptakan mekanisme yang menyatukan cara kerja, bukan menambah beban administrasi. Forum walidata dengan penanggung jawab di tiap unit menciptakan kepemilikan bersama.",
+x:["Permintaan format seragam tanpa kesepakatan definisi tetap menghasilkan angka yang tidak konsisten.",
+"Kunci. Tata kelola data bersama + repositori tunggal + kepemilikan di tiap unit.",
+"Penggabungan teknis oleh satu unit menempatkan unit lain sebagai objek, bukan mitra sinergi.",
+"Pedoman tertulis tanpa forum dan penanggung jawab jarang berubah menjadi praktik."]},
+
+{c:2,q:"Tim pengolahan data dan tim subject matter saling menyalahkan atas tingginya anomali data. Tim pengolahan menyebut kuesioner tidak konsisten; tim subject matter menyebut aturan validasi terlalu kaku. Langkah level 4 adalah…",
+o:["Meminta kedua tim menyampaikan argumentasi tertulis untuk diputuskan pimpinan",
+"Membentuk mekanisme kerja bersama sejak tahap perancangan — aturan validasi disusun bersama subject matter, diuji bersama, dan dievaluasi dalam siklus tetap — sehingga tanggung jawab kualitas data menjadi milik bersama",
+"Menetapkan bahwa kualitas data adalah tanggung jawab tim subject matter sebagai pemilik kegiatan",
+"Menyelenggarakan pelatihan bersama tentang aturan validasi untuk kedua tim"],
+a:1,k:"Menggeser dari saling menyalahkan menjadi tanggung jawab bersama yang melekat pada proses.",
+w:"Sinergi antar unit (4.1) terbentuk ketika titik temu dipindahkan ke hulu proses. Menyusun dan menguji aturan validasi bersama membuat kedua unit memiliki kepentingan yang sama atas hasil akhir.",
+x:["Ajudikasi oleh pimpinan menyelesaikan perselisihan sesaat tanpa mengubah cara kerja.",
+"Kunci. Kolaborasi sejak perancangan + siklus evaluasi bersama.",
+"Menetapkan pemilik tunggal justru memperkuat sekat antar unit.",
+"Pelatihan menambah pemahaman tetapi tidak mengubah pembagian tanggung jawab."]},
+
+{c:2,q:"Rapat koordinasi bulanan lintas fungsi berjalan monoton: setiap unit melaporkan capaian sendiri, tidak ada keputusan bersama, dan persoalan yang sama muncul berulang. Perbaikan level 4 adalah…",
+o:["Mempersingkat waktu rapat dan membatasi jumlah pelapor agar lebih efisien",
+"Mengubah rapat menjadi forum penyelesaian isu lintas unit: agenda disusun dari hambatan bersama, setiap isu memiliki penanggung jawab dan tenggat, dan tindak lanjut dipantau pada rapat berikutnya",
+"Meminta setiap unit menyampaikan laporan tertulis sehingga rapat cukup membahas hal penting saja",
+"Mengundang narasumber dari BPS RI agar rapat lebih berbobot"],
+a:1,k:"Forum bersama harus menghasilkan keputusan dan tindak lanjut lintas unit.",
+w:"Memfasilitasi kepentingan berbeda dari unit kerja lain (4.2) menuntut forum yang memproses hambatan bersama menjadi keputusan dengan penanggung jawab. Tanpa tindak lanjut yang dipantau, koordinasi berhenti sebagai pelaporan.",
+x:["Efisiensi waktu tidak menyentuh persoalan pokok, yaitu ketiadaan keputusan bersama.",
+"Kunci. Agenda berbasis isu bersama + penanggung jawab + pemantauan tindak lanjut.",
+"Laporan tertulis memperbaiki tata cara, bukan menghasilkan sinergi.",
+"Kehadiran narasumber tidak menyelesaikan hambatan antar unit yang berulang."]},
+
+{c:2,q:"Anda mengetahui satu kabupaten sangat baik dalam pengelolaan anomali data, sementara empat kabupaten lain tertinggal jauh. Tindakan level 4 sebagai pejabat provinsi adalah…",
+o:["Memberikan penghargaan kepada kabupaten terbaik agar kabupaten lain termotivasi",
+"Membangun mekanisme berbagi sumber daya dan praktik antar kabupaten — pendampingan silang, perangkat kerja bersama, dan pemantauan capaian sebagai satu kesatuan provinsi",
+"Meminta empat kabupaten tertinggal menambah jam kerja sampai capaiannya setara",
+"Menugaskan tim provinsi mengambil alih penyelesaian anomali di empat kabupaten tersebut"],
+a:1,k:"Mendorong pemanfaatan sumber daya bersama antar unit kerja.",
+w:"Indikator 4.1 dan 4.3 bertemu di sini: membangun sinergi antar unit kerja di lingkup instansi dan mengembangkan sistem yang menghargai kerja sama antar unit. Pendampingan silang mengubah keunggulan satu unit menjadi aset bersama.",
+x:["Penghargaan menstimulasi motivasi tetapi tidak memindahkan kapasitas.",
+"Kunci. Pendampingan silang + perangkat bersama + capaian dipantau sebagai satu provinsi.",
+"Penambahan jam kerja menekan gejala tanpa mengatasi perbedaan kapasitas.",
+"Pengambilalihan menciptakan ketergantungan dan menghapus pembelajaran antar unit."]},
+
+{c:2,q:"Dalam pengembangan dashboard monitoring bersama, unit teknologi informasi ingin standardisasi penuh, sedangkan unit teknis ingin tampilan khas untuk masing-masing kegiatan. Perdebatan berlarut. Sikap level 4 adalah…",
+o:["Memutuskan mengikuti usulan unit teknologi informasi karena standardisasi lebih efisien",
+"Memfasilitasi kesepakatan berupa kerangka standar bersama dengan ruang penyesuaian terkendali per kegiatan, sehingga kepentingan kedua unit terakomodasi dan target instansi tetap terjaga",
+"Membiarkan setiap unit mengembangkan dashboard sendiri sesuai kebutuhannya",
+"Menunda pengembangan sampai kedua unit mencapai kesepakatan sendiri"],
+a:1,k:"Memfasilitasi kepentingan berbeda menjadi satu rancangan yang menguntungkan instansi.",
+w:"Indikator 4.2 menuntut Anda memfasilitasi, bukan memenangkan salah satu pihak. Kerangka standar dengan ruang penyesuaian terkendali adalah bentuk kompromi yang tetap menjaga sinergi dan efisiensi organisasi.",
+x:["Memenangkan satu pihak menyelesaikan perdebatan tetapi mengorbankan kebutuhan nyata unit teknis.",
+"Kunci. Standar bersama + fleksibilitas terkendali = sinergi tanpa mematikan kebutuhan unit.",
+"Pengembangan terpisah memboroskan sumber daya dan mengulang masalah data yang tidak terpadu.",
+"Menunda tanpa fasilitasi adalah pembiaran, bukan kepemimpinan kolaboratif."]},
+
+{c:2,q:"Anda ingin memastikan sinergi antar unit tidak bergantung pada hubungan personal antar koordinator yang kebetulan akrab. Langkah paling tepat pada level 4 adalah…",
+o:["Menyelenggarakan kegiatan keakraban pegawai secara rutin agar hubungan antar unit tetap hangat",
+"Menuangkan kerja sama antar unit ke dalam mekanisme baku — sasaran bersama, jadwal koordinasi, penanggung jawab, dan sistem apresiasi — sehingga sinergi tetap berjalan meskipun personelnya berganti",
+"Menetapkan satu koordinator senior sebagai penghubung antar seluruh unit",
+"Meminta setiap koordinator melaporkan kegiatan kolaborasinya setiap bulan"],
+a:1,k:"Sinergi yang melembaga bertahan melampaui pergantian orang.",
+w:"Indikator 4.3 tentang mengembangkan sistem yang menghargai kerja sama antar unit justru bertujuan membuat kolaborasi tidak bergantung pada individu. Mekanisme baku menjamin keberlanjutan.",
+x:["Keakraban membantu, tetapi hubungan personal adalah persis ketergantungan yang ingin dihilangkan.",
+"Kunci. Sasaran bersama + mekanisme + apresiasi yang terlembaga.",
+"Satu penghubung tunggal menciptakan titik kegagalan baru yang juga bersifat personal.",
+"Pelaporan kolaborasi menghasilkan catatan, bukan sinergi."]},
+
+{c:2,q:"Sebuah kegiatan strategis provinsi memerlukan keterlibatan lima fungsi sekaligus. Sebagian koordinator menganggap kegiatan itu 'bukan pekerjaan kami'. Tindakan level 4 adalah…",
+o:["Meminta pimpinan menerbitkan surat tugas agar seluruh koordinator wajib terlibat",
+"Menjelaskan keterkaitan kegiatan dengan sasaran strategis instansi, merumuskan peran dan manfaat konkret bagi tiap fungsi, lalu menyusun komitmen bersama yang dipantau capaiannya",
+"Mengerjakan kegiatan dengan fungsi yang bersedia saja agar tidak terhambat",
+"Membagi kegiatan menjadi bagian-bagian kecil yang dikerjakan terpisah tanpa perlu koordinasi"],
+a:1,k:"Membangun komitmen tim dengan menautkan peran tiap unit pada sasaran strategis instansi.",
+w:"Level 4 berjudul membangun komitmen tim dan sinergi. Komitmen tumbuh ketika setiap unit melihat keterkaitan dan manfaat perannya, bukan ketika dipaksa oleh surat tugas.",
+x:["Surat tugas menghasilkan kehadiran, bukan komitmen; sinergi tidak lahir dari kewajiban formal semata.",
+"Kunci. Menautkan peran pada sasaran strategis + komitmen bersama yang dipantau.",
+"Bekerja hanya dengan yang bersedia mengukuhkan sekat antar unit.",
+"Pemecahan tugas tanpa koordinasi meniadakan justru sinergi yang dibutuhkan."]},
+
+{c:2,q:"Dua kepala fungsi berselisih mengenai kepemilikan sebuah aplikasi internal yang dikembangkan bersama, dan perselisihan mulai memengaruhi staf. Sebagai atasan keduanya, tindakan level 4 adalah…",
+o:["Menetapkan salah satu fungsi sebagai pemilik agar persoalan cepat selesai",
+"Memfasilitasi pembagian peran berbasis proses — pemilik proses bisnis, pengelola teknis, dan pengguna — yang dituangkan dalam tata kelola aplikasi yang berlaku bagi seluruh aplikasi internal instansi",
+"Meminta keduanya menyelesaikan persoalan secara kekeluargaan di luar forum resmi",
+"Menghentikan pengembangan aplikasi sampai perselisihan mereda"],
+a:1,k:"Konflik antar unit diselesaikan dengan tata kelola, bukan dengan memenangkan salah satu.",
+w:"Memfasilitasi kepentingan berbeda dari unit kerja lain (4.2) dan mengembangkan sistem yang menghargai kerja sama antar unit (4.3) bertemu pada penyusunan tata kelola yang berlaku umum, sehingga kasus serupa tidak berulang.",
+x:["Penetapan pemilik tunggal menyelesaikan gejala dan menyisakan rasa kalah pada satu pihak.",
+"Kunci. Pembagian peran berbasis proses + tata kelola yang berlaku menyeluruh.",
+"Penyelesaian informal tidak menghasilkan aturan dan rawan terulang.",
+"Penghentian pengembangan merugikan organisasi dan tidak menyelesaikan sebab perselisihan."]}
+];
+
+// Bagian 2 — Komunikasi (3) & Orientasi pada Hasil (4)
+const A2 = [
+{c:3,q:"Anda diminta menyusun bahan paparan tentang capaian pendataan lapangan yang menggabungkan data progres sistem, laporan pengawas, hasil pemeriksaan kualitas, dan keluhan responden. Setiap sumber memberi gambaran berbeda. Tindakan Komunikasi level 4 adalah…",
+o:["Menyajikan seluruh data dari setiap sumber secara berurutan agar pimpinan dapat menilai sendiri",
+"Memilih satu sumber yang paling mutakhir agar paparan tidak membingungkan",
+"Mengintegrasikan seluruh sumber menjadi satu pemahaman utuh — menjelaskan mengapa angkanya berbeda, apa yang sebenarnya terjadi, dan implikasinya — sehingga semua pihak berangkat dari gambaran yang sama",
+"Menyerahkan penyusunan bahan kepada masing-masing pemilik data lalu menggabungkannya menjadi satu dokumen"],
+a:2,k:"Mengintegrasikan informasi dari berbagai sumber menjadi satu pemahaman bersama.",
+w:"Indikator 4.1 berbunyi mengintegrasikan informasi-informasi penting dari berbagai sumber dengan pihak lain untuk mendapatkan pemahaman yang sama. Menjelaskan sebab perbedaan angka adalah inti pekerjaan integrasi, bukan sekadar menyandingkan.",
+x:["Menyajikan berurutan memindahkan beban integrasi kepada pembaca; ini pelaporan, bukan komunikasi level 4.",
+"Menyederhanakan dengan membuang sumber lain menghilangkan informasi penting dan berisiko menyesatkan.",
+"Kunci. Integrasi lintas sumber + penjelasan penyebab perbedaan + implikasi = pemahaman yang sama.",
+"Penggabungan dokumen tanpa sintesis hanya menghasilkan kumpulan bahan yang tidak koheren."]},
+
+{c:3,q:"Anda harus menyusun naskah kebijakan tentang tata kelola data statistik sektoral yang menyentuh aspek hukum, teknis, kelembagaan, dan anggaran. Naskah akan menjadi rujukan lintas perangkat daerah. Perilaku level 4 adalah…",
+o:["Menyusun naskah yang menekankan aspek teknis karena itu kompetensi utama Anda",
+"Menuangkan konsep dari berbagai sudut pandang secara terpadu dalam satu naskah formal, dengan alur argumentasi yang menautkan dasar hukum, rancangan teknis, kelembagaan, dan konsekuensi anggaran",
+"Menyusun empat naskah terpisah sesuai bidang agar masing-masing pembaca membaca bagiannya",
+"Menyalin kerangka naskah serupa dari provinsi lain dan menyesuaikan nama daerah"],
+a:1,k:"Menuangkan pemikiran multidimensi dalam satu tulisan formal yang koheren.",
+w:"Indikator 4.2 menyebut menuangkan pemikiran atau konsep dari berbagai sudut pandang atau multidimensi dalam bentuk tulisan formal. Kekuatan level 4 terletak pada kemampuan mengikat berbagai dimensi menjadi satu alur argumentasi.",
+x:["Menonjolkan satu dimensi membuat naskah tidak dapat dipakai sebagai rujukan lintas bidang.",
+"Kunci. Satu naskah formal yang mengikat empat dimensi dalam satu alur argumentasi.",
+"Naskah terpisah menghilangkan keterkaitan antar aspek yang justru menjadi inti kebijakan.",
+"Penyalinan tanpa penyesuaian substansi bukan penuangan pemikiran, dan berisiko tidak relevan."]},
+
+{c:3,q:"Sepuluh perangkat daerah belum bersedia menyerahkan metadata statistik sektoral karena menganggap hal itu menambah beban. Anda perlu mereka sepakat pada satu langkah bersama. Pendekatan level 4 adalah…",
+o:["Mengirimkan surat permintaan resmi dengan mencantumkan dasar hukum dan tenggat penyerahan",
+"Menyampaikan argumentasi persuasif yang menautkan manfaat langsung bagi kinerja masing-masing perangkat daerah, memperlihatkan bukti dari daerah yang berhasil, dan menawarkan pendampingan, sehingga tercapai kesepakatan langkah bersama",
+"Melaporkan ketidakpatuhan tersebut kepada pimpinan daerah agar diterbitkan instruksi",
+"Menjelaskan konsekuensi penilaian yang akan mereka terima apabila tidak menyerahkan metadata"],
+a:1,k:"Persuasi berbasis manfaat dan bukti untuk melahirkan kesepakatan langkah bersama.",
+w:"Indikator 4.3 menyebut menyampaikan informasi secara persuasif untuk mendorong pemangku kepentingan sepakat pada langkah bersama dengan tujuan meningkatkan kinerja secara keseluruhan. Persuasi bekerja lewat manfaat dan bukti, bukan lewat kewajiban semata.",
+x:["Surat resmi bersifat administratif; kepatuhan formal tidak sama dengan kesepakatan langkah bersama.",
+"Kunci. Manfaat konkret + bukti keberhasilan + dukungan teknis = kesepakatan sukarela dan berkelanjutan.",
+"Menggunakan otoritas pihak ketiga melewati proses membangun kesepakatan.",
+"Menekankan konsekuensi negatif adalah tekanan, bukan persuasi, dan cenderung melahirkan kepatuhan minimal."]},
+
+{c:3,q:"Hasil pemeriksaan menunjukkan adanya kelemahan serius pada kualitas data salah satu kegiatan besar. Informasi ini harus disampaikan kepada pimpinan dan seluruh kepala unit tanpa menimbulkan saling menyalahkan. Pendekatan level 4 adalah…",
+o:["Menyampaikan temuan secara lisan hanya kepada pimpinan agar tidak menimbulkan kegaduhan",
+"Menyampaikan temuan dalam forum lintas unit dengan kerangka yang menautkan penyebab pada proses, bukan pada orang, disertai usulan langkah bersama yang disepakati untuk memperbaiki kinerja keseluruhan",
+"Menyampaikan temuan apa adanya beserta nama unit penyebab agar setiap pihak memahami tanggung jawabnya",
+"Menyampaikan temuan secara tertulis tanpa forum pembahasan agar setiap unit menyikapinya sendiri"],
+a:1,k:"Informasi sensitif dibingkai pada proses dan diarahkan pada kesepakatan langkah bersama.",
+w:"Level 4 mengemukakan pemikiran multidimensi untuk mendorong kesepakatan dengan tujuan meningkatkan kinerja secara keseluruhan. Membingkai temuan pada proses menjaga forum tetap produktif dan menghasilkan komitmen perbaikan.",
+x:["Menyampaikan terbatas kepada pimpinan menghambat perbaikan yang memerlukan keterlibatan seluruh unit.",
+"Kunci. Forum lintas unit + kerangka proses + usulan langkah bersama.",
+"Penyebutan unit penyebab memicu pembelaan diri dan menutup ruang perbaikan bersama.",
+"Penyampaian tertulis tanpa forum tidak menghasilkan kesepakatan langkah bersama."]},
+
+{c:3,q:"Anda perlu meyakinkan seluruh kepala BPS kabupaten/kota untuk mengadopsi satu perangkat pemantauan baru yang menambah pekerjaan di awal namun menghemat waktu di kemudian hari. Sebagian menolak. Pendekatan level 4 adalah…",
+o:["Menjelaskan fitur perangkat secara rinci agar mereka melihat keunggulan teknisnya",
+"Menyajikan perbandingan beban kerja sebelum dan sesudah berdasarkan uji coba nyata, menjawab keberatan satu per satu dengan data, dan menawarkan penerapan bertahap sehingga tercapai kesepakatan untuk melangkah bersama",
+"Menetapkan penggunaan perangkat sebagai kewajiban dan memantau kepatuhannya",
+"Menerapkan perangkat hanya di kabupaten yang bersedia agar tidak menimbulkan resistensi"],
+a:1,k:"Persuasi dengan bukti dan penanganan keberatan, bermuara pada langkah bersama.",
+w:"Indikator 4.3 menekankan persuasi untuk mendorong kesepakatan langkah bersama demi peningkatan kinerja keseluruhan. Bukti uji coba dan penerapan bertahap adalah instrumen persuasi yang menjawab kekhawatiran nyata.",
+x:["Penjelasan fitur menjawab pertanyaan teknis, bukan keberatan tentang beban kerja.",
+"Kunci. Bukti perbandingan + menjawab keberatan + jalur penerapan bertahap.",
+"Kewajiban tanpa kesepakatan menghasilkan kepatuhan administratif dan penggunaan seadanya.",
+"Penerapan sebagian meninggalkan kesenjangan dan menggagalkan tujuan pemantauan menyeluruh."]},
+
+{c:3,q:"Media daerah menghubungi Anda untuk meminta penjelasan mengenai isu yang berkembang bahwa data sensus akan digunakan untuk keperluan perpajakan. Sikap Komunikasi level 4 adalah…",
+o:["Menyampaikan bahwa isu tersebut tidak benar dan meminta media tidak memberitakannya",
+"Meminta media menghubungi BPS RI karena isu bersifat nasional",
+"Menyusun penjelasan terpadu yang menautkan dasar hukum kerahasiaan, praktik pengamanan data, dan manfaat data bagi publik, lalu menyampaikannya secara persuasif agar media ikut menjadi saluran pemahaman yang benar",
+"Menyampaikan bantahan singkat secara tertulis untuk menghindari salah kutip"],
+a:2,k:"Mengintegrasikan berbagai dimensi menjadi pesan persuasif yang membangun pemahaman publik.",
+w:"Level 4 memadukan indikator 4.1 dan 4.3: mengintegrasikan informasi penting dari berbagai sumber dan menyampaikannya secara persuasif agar pemangku kepentingan sepakat pada langkah bersama — dalam hal ini media menjadi mitra penyebar pemahaman yang benar.",
+x:["Bantahan disertai permintaan tidak memberitakan berkesan menutup informasi dan memperbesar kecurigaan.",
+"Mengalihkan ke pusat melepaskan tanggung jawab komunikasi pada lingkup kewenangan sendiri.",
+"Kunci. Penjelasan multidimensi + persuasi + menjadikan media mitra pemahaman publik.",
+"Bantahan singkat aman secara prosedural tetapi tidak membangun pemahaman yang utuh."]},
+
+{c:3,q:"Dalam rapat lintas instansi, dua pihak berdebat karena memakai definisi 'usaha mikro' yang berbeda, sehingga angka yang dibawa tidak dapat dipertemukan. Tindakan level 4 adalah…",
+o:["Menyampaikan bahwa definisi BPS adalah yang paling tepat karena mengacu pada standar statistik",
+"Menghentikan perdebatan dan menyarankan pembahasan dilanjutkan pada kesempatan lain",
+"Memaparkan asal-usul kedua definisi, menunjukkan konsekuensi masing-masing terhadap angka, dan memfasilitasi kesepakatan definisi kerja bersama sebagai dasar langkah selanjutnya",
+"Menyajikan kedua angka secara berdampingan dan membiarkan pengguna memilih"],
+a:2,k:"Menyatukan pemahaman dengan menjelaskan konsekuensi tiap sudut pandang.",
+w:"Indikator 4.1 menuntut integrasi informasi lintas sumber untuk memperoleh pemahaman yang sama. Menjelaskan konsekuensi tiap definisi memberi dasar rasional bagi kesepakatan, bukan sekadar memenangkan salah satu.",
+x:["Klaim keunggulan definisi sendiri menutup dialog dan tidak menghasilkan pemahaman bersama.",
+"Menunda pembahasan membiarkan perbedaan berlanjut ke tahap berikutnya.",
+"Kunci. Menjelaskan asal-usul + konsekuensi + memfasilitasi definisi kerja bersama.",
+"Menyajikan dua angka tanpa penjelasan justru memindahkan kebingungan kepada pengguna."]},
+
+{c:3,q:"Anda menyusun laporan tahunan pengelolaan teknologi informasi yang akan dibaca pimpinan non-teknis dan auditor. Pendekatan penulisan level 4 adalah…",
+o:["Menulis laporan dengan istilah teknis lengkap agar akurat dan dapat dipertanggungjawabkan",
+"Menulis laporan yang memadukan sudut pandang layanan, risiko, kepatuhan, dan nilai manfaat, dengan bahasa yang dapat dipahami kedua kelompok pembaca tanpa mengurangi ketepatan substansi",
+"Menulis ringkasan sederhana untuk pimpinan dan melampirkan dokumen teknis terpisah untuk auditor",
+"Mengikuti format laporan tahun sebelumnya agar konsisten dan mudah dibandingkan"],
+a:1,k:"Satu tulisan formal, banyak sudut pandang, satu tingkat pemahaman.",
+w:"Indikator 4.2 menuntut kemampuan menuangkan konsep multidimensi dalam tulisan formal. Tantangan level 4 adalah menjaga ketepatan substansi sekaligus keterbacaan bagi audiens yang berbeda dalam satu dokumen yang utuh.",
+x:["Kepadatan istilah teknis membuat laporan tidak berfungsi bagi sebagian besar pembacanya.",
+"Kunci. Multidimensi + terbaca oleh audiens berbeda + substansi tetap tepat.",
+"Pemisahan dokumen mempermudah penulis, tetapi memecah pemahaman dan berpotensi tidak konsisten.",
+"Mengikuti format lama adalah kepatuhan administratif, bukan penuangan pemikiran."]},
+
+{c:3,q:"Sebuah kebijakan baru pengolahan data akan mengubah cara kerja seluruh kabupaten/kota. Sebagian koordinator sudah menyampaikan keresahan lewat jalur informal. Langkah komunikasi level 4 adalah…",
+o:["Menyampaikan kebijakan melalui surat edaran resmi agar tidak menimbulkan tafsir berbeda",
+"Menunggu sampai keresahan mereda lalu menyampaikan kebijakan pada waktu yang lebih kondusif",
+"Memadukan saluran formal dan informal — menyerap keresahan lebih dahulu, menyusun penjelasan yang menjawabnya, lalu menyampaikannya dalam forum resmi hingga tercapai kesepakatan langkah bersama",
+"Meminta setiap kepala kabupaten menyampaikan kebijakan kepada stafnya masing-masing"],
+a:2,k:"Menggabungkan saluran formal dan informal untuk mencapai kesepakatan.",
+w:"Level 4 menuntut komunikasi yang mendorong kesepakatan untuk meningkatkan kinerja keseluruhan. Menyerap keresahan lebih dahulu membuat penjelasan resmi tepat sasaran dan diterima.",
+x:["Surat edaran menyampaikan isi kebijakan, tetapi tidak menjawab keresahan yang sudah muncul.",
+"Menunda tanpa mengelola keresahan justru membiarkan tafsir liar berkembang.",
+"Kunci. Menyerap keresahan (informal) + penjelasan yang menjawab + forum resmi.",
+"Mendelegasikan penyampaian membuat pesan berubah pada setiap tingkat penyampaian."]},
+
+{c:3,q:"Anda perlu menyampaikan kepada Pemerintah Daerah bahwa angka kemiskinan daerahnya naik, di tengah harapan mereka akan hasil sebaliknya. Pendekatan level 4 adalah…",
+o:["Menyampaikan angka apa adanya dan mempersilakan Pemerintah Daerah menafsirkannya",
+"Menyampaikan angka disertai penjelasan metodologi, faktor pendorong, perbandingan wilayah sebanding, dan implikasi kebijakan, sehingga diperoleh pemahaman yang sama serta kesepakatan langkah tindak lanjut",
+"Menunda penyampaian sampai tersedia data pendukung yang lebih menguntungkan",
+"Menyampaikan angka dengan penekanan pada indikator lain yang menunjukkan perbaikan"],
+a:1,k:"Informasi sensitif disampaikan utuh, dijelaskan multidimensi, diarahkan pada tindak lanjut.",
+w:"Level 4 memadukan integrasi informasi dan persuasi untuk kesepakatan langkah bersama. Penjelasan faktor pendorong dan implikasi kebijakan mengubah kabar yang tidak menyenangkan menjadi dasar tindakan bersama.",
+x:["Penyampaian tanpa penjelasan berisiko melahirkan tafsir keliru dan penolakan terhadap data.",
+"Kunci. Metodologi + faktor pendorong + pembanding + implikasi kebijakan.",
+"Penundaan yang dimotivasi hasil yang diinginkan melanggar integritas sekaligus mengurangi manfaat data.",
+"Mengalihkan perhatian ke indikator lain mengaburkan substansi yang harus disampaikan."]},
+
+{c:3,q:"Pada forum nasional, Anda diminta menyampaikan pengalaman provinsi dalam menyelesaikan anomali data. Sebagian peserta berasal dari daerah dengan karakteristik sangat berbeda. Pendekatan level 4 adalah…",
+o:["Memaparkan kronologi kegiatan provinsi Anda secara rinci agar peserta memahami keseluruhan proses",
+"Merumuskan prinsip dan pola yang dapat dipindahkan, menautkannya pada konteks berbeda yang dihadapi peserta, serta mengajak mereka menyepakati langkah bersama untuk perbaikan kinerja",
+"Membagikan berkas perangkat kerja provinsi Anda agar peserta dapat menirunya",
+"Menyampaikan capaian angka provinsi Anda sebagai bukti keberhasilan pendekatan yang dipakai"],
+a:1,k:"Mengangkat pengalaman menjadi prinsip yang dapat disepakati bersama lintas konteks.",
+w:"Indikator 4.3 mengarah pada kesepakatan langkah bersama untuk meningkatkan kinerja secara keseluruhan. Memindahkan prinsip, bukan prosedur, membuat pengalaman satu daerah bermanfaat bagi daerah lain.",
+x:["Kronologi rinci bersifat deskriptif dan sulit diterapkan pada konteks yang berbeda.",
+"Kunci. Prinsip yang dapat dipindahkan + penautan pada konteks peserta + ajakan langkah bersama.",
+"Berbagi berkas bermanfaat tetapi belum menjawab perbedaan konteks antar daerah.",
+"Pemaparan capaian menonjolkan keberhasilan tanpa membangun kesepakatan langkah bersama."]},
+
+{c:4,q:"Capaian pencacahan provinsi sudah melampaui target nasional pada pertengahan periode. Sebagai pejabat administrator, tindakan Orientasi pada Hasil level 4 adalah…",
+o:["Mempertahankan ritme kerja agar capaian tidak menurun sampai akhir periode",
+"Mendorong seluruh unit menetapkan sasaran yang lebih tinggi dari target, mengalihkan kapasitas berlebih ke unit yang tertinggal, dan memastikan mutu tetap selaras dengan sasaran strategis instansi",
+"Memberikan penghargaan kepada unit yang telah melampaui target sebagai bentuk apresiasi",
+"Melaporkan capaian kepada BPS RI sebagai bukti kinerja provinsi"],
+a:1,k:"Mendorong seluruh unit melampaui target dan memanfaatkan sumber daya bersama.",
+w:"Indikator 4.1 dan 4.3 menyebut mendorong unit kerja di tingkat instansi mencapai kinerja melebihi target dan mendorong pemanfaatan sumber daya bersama antar unit. Menjaga mutu memastikan capaian selaras dengan sasaran strategis (4.2).",
+x:["Mempertahankan ritme adalah sikap aman; level 4 justru mendorong melampaui capaian sebelumnya.",
+"Kunci. Sasaran lebih tinggi + realokasi kapasitas antar unit + penjagaan mutu.",
+"Apresiasi mendorong unit sendiri (level 3), belum menggerakkan kinerja tingkat instansi.",
+"Pelaporan capaian bersifat administratif dan tidak menambah kinerja."]},
+
+{c:4,q:"Satu fungsi mencapai seluruh target kegiatannya, tetapi hasilnya tidak dimanfaatkan dalam perencanaan daerah maupun kegiatan unit lain. Sikap level 4 adalah…",
+o:["Menilai kinerja fungsi tersebut baik karena seluruh target telah tercapai",
+"Mengevaluasi keselarasan hasil kerja unit dengan sasaran strategis instansi, lalu mengarahkan agar keluarannya dirancang untuk dimanfaatkan pengguna dan unit lain",
+"Menambah jumlah target kegiatan fungsi tersebut pada tahun berikutnya",
+"Meminta unit lain lebih aktif memanfaatkan hasil kerja fungsi tersebut"],
+a:1,k:"Memantau dan mengevaluasi hasil kerja agar selaras dengan sasaran strategis instansi.",
+w:"Indikator 4.2 secara harfiah menyebut memantau dan mengevaluasi hasil kerja unitnya agar selaras dengan sasaran strategis instansi. Target yang tercapai tetapi tidak bermanfaat menunjukkan ketidakselarasan yang harus dikoreksi.",
+x:["Menilai semata dari ketercapaian target mengabaikan pertanyaan tentang manfaat dan keselarasan.",
+"Kunci. Evaluasi keselarasan + perancangan ulang keluaran agar termanfaatkan.",
+"Menambah target memperbesar volume pekerjaan yang belum tentu bermanfaat.",
+"Membebankan persoalan pada pengguna tidak menyentuh perancangan keluaran yang menjadi akar masalah."]},
+
+{c:4,q:"Tiga unit di satuan kerja Anda masing-masing menyewa layanan komputasi awan sendiri untuk kegiatan yang sebenarnya serupa. Biaya total tinggi dan pemanfaatannya rendah. Tindakan level 4 adalah…",
+o:["Meminta setiap unit menurunkan spesifikasi layanan agar biaya berkurang",
+"Mendorong pemanfaatan sumber daya bersama melalui satu layanan terkonsolidasi dengan tata kelola penggunaan lintas unit, sehingga efektivitas dan efisiensi pencapaian target organisasi meningkat",
+"Menghentikan sewa layanan pada unit yang pemanfaatannya paling rendah",
+"Mengalihkan seluruh pengelolaan layanan kepada unit teknologi informasi"],
+a:1,k:"Mendorong pemanfaatan sumber daya bersama antar unit kerja.",
+w:"Indikator 4.3 menyebut mendorong pemanfaatan sumber daya bersama antar unit kerja dalam rangka meningkatkan efektivitas dan efisiensi pencapaian target organisasi. Konsolidasi dengan tata kelola menjaga agar kebutuhan tiap unit tetap terlayani.",
+x:["Penurunan spesifikasi menekan biaya sekaligus berisiko mengganggu capaian kegiatan.",
+"Kunci. Konsolidasi layanan + tata kelola penggunaan lintas unit.",
+"Penghentian sepihak menyelesaikan biaya satu unit tanpa mengatasi duplikasi secara keseluruhan.",
+"Pengalihan pengelolaan tanpa tata kelola bersama hanya memindahkan persoalan."]},
+
+{c:4,q:"Menjelang akhir tahun, capaian salah satu sasaran strategis instansi diperkirakan tidak tercapai, sementara seluruh unit merasa target kegiatannya masing-masing sudah terpenuhi. Tindakan level 4 adalah…",
+o:["Menerima kondisi tersebut karena setiap unit sudah menjalankan tugasnya sesuai target",
+"Menelusuri keterputusan antara target kegiatan unit dan sasaran strategis instansi, lalu mengarahkan penyesuaian prioritas dan pengerahan sumber daya lintas unit untuk mengejar sasaran tersebut",
+"Meminta unit yang paling terkait menambah kegiatan pada sisa waktu yang ada",
+"Mengusulkan penyesuaian target sasaran strategis agar realistis dengan kondisi berjalan"],
+a:1,k:"Menautkan kembali kinerja unit dengan sasaran strategis instansi.",
+w:"Indikator 4.2 menuntut pemantauan dan evaluasi agar hasil kerja unit selaras dengan sasaran strategis instansi, sedangkan 4.3 mendorong pengerahan sumber daya bersama. Keduanya diperlukan ketika target unit tercapai namun sasaran instansi meleset.",
+x:["Menerima keadaan mengabaikan tanggung jawab menjaga keselarasan pada tingkat instansi.",
+"Kunci. Menelusuri keterputusan + penyesuaian prioritas + pengerahan sumber daya lintas unit.",
+"Membebankan pada satu unit mengabaikan sifat lintas unit dari sasaran strategis.",
+"Menurunkan target adalah jalan terakhir, bukan respons pertama seorang pejabat berorientasi hasil."]},
+
+{c:4,q:"Anda menemukan bahwa proses pengolahan yang selama ini memakan waktu dua minggu dapat dipersingkat menjadi tiga hari melalui otomasi. Unit lain memiliki proses serupa. Tindakan level 4 adalah…",
+o:["Menerapkan otomasi di unit Anda dan menjadikannya contoh keberhasilan",
+"Menerapkan otomasi dan mendorong seluruh unit mengadopsinya melalui perangkat bersama, pendampingan, dan pengukuran penghematan waktu sebagai kinerja instansi",
+"Menawarkan otomasi kepada unit lain apabila mereka memintanya",
+"Menyusun dokumentasi otomasi dan mengunggahnya ke penyimpanan bersama"],
+a:1,k:"Peningkatan kinerja diperluas menjadi kinerja tingkat instansi.",
+w:"Indikator 4.1 menuntut mendorong unit kerja di tingkat instansi mencapai kinerja melebihi target. Menyebarkan inovasi dengan pendampingan dan pengukuran mengubah keberhasilan satu unit menjadi lompatan kinerja organisasi.",
+x:["Menerapkan di unit sendiri dan menjadi contoh adalah perilaku level 2–3.",
+"Kunci. Adopsi menyeluruh + pendampingan + pengukuran penghematan sebagai kinerja instansi.",
+"Sikap menunggu permintaan tidak memenuhi unsur 'mendorong'.",
+"Dokumentasi yang tersedia belum tentu dipakai; tanpa pendampingan adopsi jarang terjadi."]},
+
+{c:4,q:"Rapat evaluasi kinerja triwulanan di instansi Anda selalu berisi pemaparan angka capaian tanpa pembahasan penyebab dan tindak lanjut. Perbaikan level 4 adalah…",
+o:["Menambah frekuensi rapat menjadi bulanan agar capaian lebih cepat terpantau",
+"Mengubah evaluasi menjadi mekanisme yang menautkan capaian unit dengan sasaran strategis, menganalisis penyebab penyimpangan, menetapkan tindakan korektif dengan penanggung jawab, dan menagih hasilnya pada periode berikutnya",
+"Meminta setiap unit menyertakan grafik tren agar pemaparan lebih informatif",
+"Menetapkan sanksi bagi unit yang capaiannya di bawah target"],
+a:1,k:"Evaluasi bermakna: capaian ditautkan ke sasaran strategis dan berbuah tindakan korektif.",
+w:"Indikator 4.2 menyebut memantau dan mengevaluasi hasil kerja agar selaras dengan sasaran strategis instansi. Evaluasi hanya berfungsi bila menghasilkan tindakan korektif yang ditagih pada periode berikutnya.",
+x:["Menambah frekuensi memperbanyak rapat tanpa mengubah kualitas pembahasan.",
+"Kunci. Penautan ke sasaran strategis + analisis penyebab + tindakan korektif yang ditagih.",
+"Perbaikan penyajian visual tidak mengubah ketiadaan analisis dan tindak lanjut.",
+"Sanksi tanpa analisis penyebab mendorong pelaporan yang aman, bukan perbaikan kinerja."]},
+
+{c:4,q:"Sebuah kegiatan mencapai target jumlah dokumen, tetapi tingkat kesalahan isian tinggi sehingga memerlukan pengulangan besar-besaran. Sikap level 4 adalah…",
+o:["Menyatakan target tercapai dan menjadwalkan perbaikan kualitas pada tahap berikutnya",
+"Menegaskan bahwa capaian diukur dari hasil yang bermutu dan selaras sasaran strategis, lalu mengubah ukuran kinerja unit agar memuat mutu, serta mengerahkan sumber daya lintas unit untuk perbaikan",
+"Meminta petugas mengulang pekerjaan yang salah dengan tenggat lebih ketat",
+"Menurunkan target volume pada periode berikutnya agar kualitas terjaga"],
+a:1,k:"Kinerja bukan volume, melainkan hasil bermutu yang selaras sasaran strategis.",
+w:"Level 4 menuntut pemantauan agar hasil kerja selaras dengan sasaran strategis instansi. Mengubah ukuran kinerja agar memuat mutu adalah tindakan struktural, bukan sekadar penanganan kasus.",
+x:["Mengakui target tercapai atas dasar volume mengabaikan makna kinerja yang sesungguhnya.",
+"Kunci. Ukuran kinerja memuat mutu + pengerahan sumber daya lintas unit.",
+"Pengulangan dengan tenggat ketat mengatasi gejala dan berisiko menurunkan mutu lebih jauh.",
+"Menurunkan volume mengorbankan cakupan, bukan memperbaiki proses yang menghasilkan kesalahan."]},
+
+{c:4,q:"Anda ingin memastikan capaian instansi tidak hanya bergantung pada kerja keras menjelang tenggat. Langkah paling tepat pada level 4 adalah…",
+o:["Menetapkan tenggat internal yang lebih awal dari tenggat resmi",
+"Membangun sistem pemantauan capaian antara yang terhubung dengan sasaran strategis, dengan ambang peringatan dini dan mekanisme pengerahan sumber daya lintas unit ketika capaian melenceng",
+"Meminta setiap unit melaporkan capaian mingguan kepada pimpinan",
+"Menambah jumlah petugas pada periode menjelang tenggat"],
+a:1,k:"Peringatan dini plus kemampuan mengerahkan sumber daya bersama.",
+w:"Indikator 4.2 dan 4.3 bertemu: pemantauan yang selaras sasaran strategis dan pemanfaatan sumber daya bersama antar unit. Sistem peringatan dini mengubah pengelolaan kinerja dari reaktif menjadi antisipatif.",
+x:["Tenggat internal lebih awal hanya menggeser tekanan, bukan mengelola risiko capaian.",
+"Kunci. Pemantauan capaian antara + ambang peringatan dini + pengerahan sumber daya lintas unit.",
+"Pelaporan mingguan menghasilkan informasi tanpa mekanisme koreksi.",
+"Penambahan petugas di akhir periode adalah penanganan darurat yang mahal dan berulang."]},
+
+{c:4,q:"Dua unit meminta tambahan anggaran untuk mencapai target masing-masing, sementara pagu instansi terbatas dan sasaran strategis instansi mensyaratkan keduanya berhasil. Tindakan level 4 adalah…",
+o:["Membagi tambahan anggaran secara proporsional sesuai besar target masing-masing unit",
+"Menelaah kebutuhan kedua unit, mengidentifikasi kegiatan yang dapat dikerjakan bersama atau memakai sumber daya yang sama, lalu menyusun skema berbagi sumber daya agar kedua sasaran tercapai dalam pagu yang ada",
+"Memprioritaskan unit dengan capaian terbaik agar anggaran lebih berdaya guna",
+"Mengusulkan tambahan pagu kepada BPS RI dan menunda pelaksanaan sampai ada kepastian"],
+a:1,k:"Efektivitas dan efisiensi lewat pemanfaatan sumber daya bersama antar unit.",
+w:"Indikator 4.3 mendorong pemanfaatan sumber daya bersama antar unit kerja untuk meningkatkan efektivitas dan efisiensi pencapaian target organisasi. Menemukan irisan kegiatan adalah cara mencapai dua sasaran dengan sumber daya terbatas.",
+x:["Pembagian proporsional bersifat administratif dan tidak menciptakan efisiensi.",
+"Kunci. Identifikasi irisan kegiatan + skema berbagi sumber daya dalam pagu yang ada.",
+"Memprioritaskan satu unit mengorbankan sasaran strategis yang mensyaratkan keduanya berhasil.",
+"Menunda pelaksanaan sambil menunggu tambahan pagu mengalihkan tanggung jawab dan berisiko gagal target."]},
+
+{c:4,q:"Seorang koordinator melaporkan bahwa unitnya pasti mencapai target, namun Anda melihat indikator antara menunjukkan sebaliknya. Ia menyampaikan akan mengejar pada bulan terakhir. Respons level 4 adalah…",
+o:["Menerima penjelasan tersebut dan menunggu hasil akhir sebagai bukti",
+"Menelusuri indikator antara bersama koordinator, menyepakati capaian mingguan yang terukur, dan menyiapkan dukungan sumber daya lintas unit apabila capaian tetap melenceng",
+"Menegur koordinator karena laporannya tidak sesuai dengan data pemantauan",
+"Meminta koordinator menyusun laporan tertulis mengenai rencana pengejaran target"],
+a:1,k:"Pemantauan aktif disertai kesiapan dukungan, bukan menunggu atau menegur.",
+w:"Indikator 4.2 menuntut pemantauan dan evaluasi yang aktif, sedangkan 4.3 menyediakan mekanisme dukungan lintas unit. Kombinasi keduanya mencegah kegagalan target sebelum terjadi.",
+x:["Menunggu hasil akhir menghilangkan kesempatan koreksi ketika masih tersedia waktu.",
+"Kunci. Penelusuran indikator antara + capaian mingguan terukur + dukungan lintas unit.",
+"Teguran menyoroti laporan, bukan risiko kegagalan capaian yang harus dikelola.",
+"Laporan rencana menghasilkan dokumen tanpa jaminan pelaksanaan."]},
+
+{c:4,q:"Instansi Anda ditetapkan sebagai percontohan penerapan indikator kinerja baru yang lebih menantang. Sebagian kepala unit khawatir capaian mereka akan tampak menurun. Tindakan level 4 adalah…",
+o:["Menerapkan indikator baru hanya pada unit yang siap agar capaian instansi tidak terganggu",
+"Mendorong seluruh unit menerapkan indikator baru sebagai sarana melampaui kinerja sebelumnya, menjelaskan bahwa penilaian menimbang tingkat kesulitan, dan menyediakan dukungan agar capaian tetap terjaga",
+"Menerapkan indikator baru dan menilai unit sesuai hasil apa adanya sebagai konsekuensi kebijakan",
+"Menunda penerapan indikator baru sampai seluruh unit siap"],
+a:1,k:"Mendorong seluruh unit melampaui kinerja sebelumnya, disertai dukungan.",
+w:"Indikator 4.1 menyebut mendorong unit kerja di tingkat instansi untuk mencapai kinerja yang melebihi target yang ditetapkan. Dukungan dan kejelasan penilaian membuat dorongan itu dapat diterima dan dijalankan.",
+x:["Penerapan sebagian menggagalkan tujuan percontohan dan menciptakan perlakuan berbeda antar unit.",
+"Kunci. Dorongan menyeluruh + kejelasan penilaian + dukungan pelaksanaan.",
+"Menerapkan tanpa dukungan berisiko menurunkan motivasi dan capaian secara keseluruhan.",
+"Penundaan menghindari tantangan, berlawanan dengan semangat melampaui target."]}
+];
+
+// Bagian 3 — Pelayanan Publik (5) & Pengembangan Diri dan Orang Lain (6)
+const A3 = [
+{c:5,q:"Menjelang tahun politik, permintaan data kemiskinan dan ketenagakerjaan dari berbagai pihak meningkat tajam, sebagian disertai permintaan penyajian dengan penekanan tertentu. Tindakan Pelayanan Publik level 4 adalah…",
+o:["Melayani seluruh permintaan sesuai urutan masuk agar tidak ada pihak yang merasa dibedakan",
+"Mengantisipasi dampak situasi politik terhadap pelayanan dengan menetapkan kebijakan penyajian data yang seragam, terbuka bagi semua pihak, dan tidak dapat dipesan penekanannya, lalu memastikan seluruh unit menerapkannya",
+"Membatasi pelayanan data pada periode tersebut untuk menghindari politisasi",
+"Menyerahkan penilaian setiap permintaan kepada koordinator pelayanan sesuai pertimbangannya"],
+a:1,k:"Mengantisipasi kekuatan politik dengan kebijakan pelayanan yang seragam dan netral di seluruh instansi.",
+w:"Indikator 4.1 menuntut Anda memperhitungkan dan mengantisipasi dampak isu jangka panjang dan kekuatan politik terhadap pelayanan publik, sedangkan 4.2 menjaga kebijakan instansi tetap objektif dan tidak memihak. Kebijakan penyajian yang seragam menutup ruang perlakuan berbeda.",
+x:["Urutan masuk menjamin keadilan prosedural, tetapi tidak mencegah penyajian yang dipesan.",
+"Kunci. Antisipasi dampak politik + kebijakan penyajian seragam yang berlaku se-instansi.",
+"Membatasi pelayanan justru menyalahi kewajiban melayani dan menimbulkan kecurigaan.",
+"Penilaian kasus per kasus tanpa kebijakan membuka celah subjektivitas dan tekanan."]},
+
+{c:5,q:"Sebuah asosiasi pengusaha besar meminta layanan konsultasi statistik khusus dengan waktu dan tempat tersendiri, sementara pengguna perorangan mengantre di layanan reguler. Sikap level 4 adalah…",
+o:["Memenuhi permintaan karena asosiasi merupakan pengguna data strategis bagi instansi",
+"Menolak permintaan tersebut dan mempersilakan mereka mengikuti antrean layanan reguler",
+"Menata kebijakan layanan instansi berdasarkan jenis kebutuhan, bukan berdasarkan identitas pengguna, sehingga layanan konsultasi mendalam tersedia bagi siapa pun dengan kebutuhan serupa melalui mekanisme yang sama",
+"Memberikan layanan khusus di luar jam kerja agar tidak mengganggu pengguna lain"],
+a:2,k:"Standar layanan dibedakan menurut kebutuhan, tidak pernah menurut identitas pengguna.",
+w:"Indikator 4.2 mewajibkan kebijakan pelayanan publik instansi selaras dengan standar yang objektif, netral, tidak memihak, dan tidak diskriminatif. Solusi level 4 tidak berhenti pada menolak, melainkan menata kebijakan agar adil sekaligus responsif.",
+x:["Perlakuan istimewa berdasarkan status pengguna adalah bentuk diskriminasi layanan.",
+"Penolakan menjaga netralitas tetapi tidak memperbaiki kebijakan layanan instansi.",
+"Kunci. Kebijakan berbasis jenis kebutuhan + mekanisme yang sama bagi semua pengguna.",
+"Memindahkan waktu layanan tetap merupakan perlakuan khusus, hanya disamarkan."]},
+
+{c:5,q:"Anda memperkirakan lima tahun ke depan kebutuhan pengguna akan bergeser dari publikasi cetak ke data granular yang dapat diolah sendiri. Anggaran dan kompetensi pegawai saat ini masih terpusat pada publikasi cetak. Tindakan level 4 adalah…",
+o:["Menambah jumlah publikasi digital sebagai pelengkap publikasi cetak yang sudah ada",
+"Menyusun dan menerapkan strategi jangka panjang layanan data — peta kebutuhan pengguna, penyiapan infrastruktur data terbuka, penyesuaian kompetensi pegawai, dan tahapan peralihan anggaran",
+"Menunggu arahan resmi dari BPS RI mengenai kebijakan layanan data terbuka",
+"Melakukan survei kepuasan pengguna untuk memastikan perkiraan tersebut benar"],
+a:1,k:"Menerapkan strategi jangka panjang berbasis kebutuhan pemangku kepentingan.",
+w:"Indikator 4.3 menyebut menerapkan strategi jangka panjang yang berfokus pada pemenuhan kebutuhan pemangku kepentingan dalam menyusun kebijakan. Strategi utuh mencakup kebutuhan, infrastruktur, kompetensi, dan anggaran secara bertahap.",
+x:["Menambah publikasi digital adalah perbaikan bertahap tanpa perubahan arah layanan.",
+"Kunci. Strategi jangka panjang lengkap: kebutuhan, infrastruktur, kompetensi, anggaran.",
+"Menunggu arahan pusat menghilangkan peran antisipatif pada lingkup instansi.",
+"Survei kepuasan berguna sebagai masukan, tetapi bukan strategi dan tidak mengubah kebijakan."]},
+
+{c:5,q:"Layanan statistik terpadu di satuan kerja Anda memiliki waktu tunggu panjang bagi pengguna dari kabupaten jauh, sementara pengguna kota terlayani cepat. Kondisi ini berlangsung bertahun-tahun. Tindakan level 4 adalah…",
+o:["Menambah petugas layanan pada jam sibuk agar antrean berkurang",
+"Meminta pengguna dari kabupaten membuat janji temu terlebih dahulu",
+"Menetapkan kebijakan layanan yang menjamin kesetaraan akses lintas wilayah — layanan jarak jauh, penugasan layanan di kabupaten, dan standar waktu yang sama — serta memantau pemenuhannya sebagai kebijakan instansi",
+"Menyediakan ruang tunggu yang lebih nyaman bagi pengguna dari luar kota"],
+a:2,k:"Kesenjangan akses adalah persoalan kebijakan, bukan persoalan kenyamanan.",
+w:"Indikator 4.2 mewajibkan kebijakan layanan yang tidak diskriminatif. Perbedaan akses berbasis wilayah adalah bentuk ketidaksetaraan yang harus diselesaikan melalui kebijakan instansi, bukan penyesuaian teknis di loket.",
+x:["Penambahan petugas mempercepat antrean tanpa menyentuh kesenjangan akses antar wilayah.",
+"Janji temu memindahkan beban kepada pengguna yang justru paling sulit menjangkau layanan.",
+"Kunci. Kebijakan kesetaraan akses + standar waktu yang sama + pemantauan instansi.",
+"Kenyamanan ruang tunggu tidak mengubah ketimpangan waktu dan jarak layanan."]},
+
+{c:5,q:"Muncul wacana kebijakan daerah yang akan menjadikan data BPS sebagai dasar penyaluran bantuan, sementara data tersebut tidak dirancang untuk penetapan sasaran perorangan. Sikap level 4 adalah…",
+o:["Menyerahkan sepenuhnya keputusan penggunaan data kepada Pemerintah Daerah sebagai pengguna",
+"Menolak memberikan data agar tidak terjadi kesalahan penggunaan",
+"Mengantisipasi dampak jangka panjang kebijakan tersebut, menjelaskan batas penggunaan data secara profesional, dan mendorong penyusunan mekanisme penetapan sasaran yang tepat sebagai bagian dari layanan instansi",
+"Memberikan data dengan catatan bahwa BPS tidak bertanggung jawab atas penggunaannya"],
+a:2,k:"Memperhitungkan dampak jangka panjang penggunaan data dan mengarahkannya secara profesional.",
+w:"Indikator 4.1 menuntut memperhitungkan dan mengantisipasi dampak isu jangka panjang terhadap pelaksanaan tugas pelayanan publik secara objektif dan profesional. Menjelaskan batas penggunaan sekaligus menawarkan mekanisme yang tepat adalah bentuk pelayanan yang bertanggung jawab.",
+x:["Melepas tanggung jawab profesional membiarkan kesalahan kebijakan terjadi.",
+"Menolak memberikan data melanggar kewajiban pelayanan dan tidak menyelesaikan persoalan.",
+"Kunci. Antisipasi dampak + penjelasan batas penggunaan + usulan mekanisme yang tepat.",
+"Catatan penyangkalan tanggung jawab bersifat administratif dan tidak mencegah dampak buruk."]},
+
+{c:5,q:"Seorang pejabat menyampaikan bahwa hasil survei tertentu 'sebaiknya tidak dipublikasikan dahulu' karena berpotensi menimbulkan polemik menjelang musyawarah perencanaan pembangunan. Sikap level 4 adalah…",
+o:["Menunda publikasi sampai suasana lebih kondusif sebagai bentuk kehati-hatian",
+"Memublikasikan sesuai jadwal, menjaga agar kebijakan diseminasi instansi tetap netral dan tidak terpengaruh kepentingan pihak mana pun, serta menyiapkan penjelasan yang membantu publik memahami hasilnya",
+"Memublikasikan hanya ringkasan agar polemik dapat diminimalkan",
+"Meminta pertimbangan tertulis dari pejabat tersebut sebagai dasar keputusan"],
+a:1,k:"Kebijakan diseminasi instansi tidak boleh terpengaruh kepentingan kelompok atau politik.",
+w:"Indikator 4.2 menegaskan kebijakan pelayanan publik instansi harus netral dan tidak terpengaruh kepentingan pribadi, kelompok, atau partai politik. Level 4 menambahkan penyiapan penjelasan sehingga netralitas tidak berubah menjadi kekakuan.",
+x:["Penundaan atas dasar kekhawatiran politik adalah bentuk keberpihakan.",
+"Kunci. Jadwal dijaga + netralitas kebijakan + penjelasan yang membantu pemahaman publik.",
+"Publikasi sebagian atas motif meredam polemik tetap merupakan intervensi yang tidak netral.",
+"Meminta pertimbangan tertulis membuka ruang tawar-menawar atas hal yang seharusnya tidak dinegosiasikan."]},
+
+{c:5,q:"Anda menerima banyak keluhan bahwa aplikasi layanan data instansi sulit digunakan oleh masyarakat awam, sementara pengguna akademik tidak mengeluh. Tindakan level 4 adalah…",
+o:["Menyusun panduan penggunaan aplikasi yang lebih rinci dan menyebarkannya",
+"Menyelenggarakan pelatihan penggunaan aplikasi bagi masyarakat secara berkala",
+"Menjadikan pemenuhan kebutuhan seluruh kelompok pengguna sebagai dasar kebijakan layanan digital instansi, lalu merancang ulang layanan berdasarkan kebutuhan kelompok yang selama ini tidak terlayani",
+"Menyediakan petugas pendamping bagi pengguna yang kesulitan"],
+a:2,k:"Strategi layanan disusun dari kebutuhan pemangku kepentingan yang paling tidak terlayani.",
+w:"Indikator 4.3 menekankan strategi jangka panjang yang berfokus pada pemenuhan kebutuhan pemangku kepentingan dalam menyusun kebijakan. Merancang ulang layanan berdasarkan kelompok yang tertinggal adalah bentuk kebijakan, bukan tambalan.",
+x:["Panduan menambah bantuan tetapi mempertahankan rancangan yang menyulitkan.",
+"Pelatihan menyesuaikan pengguna dengan aplikasi, bukan sebaliknya.",
+"Kunci. Kebijakan layanan digital berbasis kebutuhan seluruh kelompok + perancangan ulang.",
+"Petugas pendamping menambal kesulitan tanpa menghilangkan sebabnya."]},
+
+{c:5,q:"Dalam penyusunan kebijakan layanan data instansi untuk lima tahun ke depan, Anda memiliki keterbatasan waktu. Pendekatan level 4 yang paling tepat adalah…",
+o:["Menyusun kebijakan berdasarkan pengalaman pelayanan selama ini agar cepat selesai",
+"Menyusun kebijakan dengan mengacu pada kebijakan provinsi lain yang sudah berjalan baik",
+"Menyusun kebijakan berdasarkan pemetaan kebutuhan berbagai kelompok pemangku kepentingan, kecenderungan jangka panjang, serta kemampuan sumber daya instansi, dengan tahapan pencapaian yang terukur",
+"Menyusun kebijakan bersama unit teknis saja karena merekalah pelaksana layanan"],
+a:2,k:"Kebijakan jangka panjang berbasis kebutuhan pemangku kepentingan dan kecenderungan masa depan.",
+w:"Indikator 4.3 menuntut penerapan strategi jangka panjang yang berfokus pada pemenuhan kebutuhan pemangku kepentingan dalam menyusun kebijakan. Pemetaan kebutuhan dan tahapan terukur adalah dua unsur yang membedakannya dari kebijakan reaktif.",
+x:["Pengalaman internal saja membuat kebijakan mengulang pola lama dan tertinggal dari kebutuhan.",
+"Meniru daerah lain mengabaikan perbedaan karakteristik pengguna dan kapasitas instansi.",
+"Kunci. Pemetaan kebutuhan + kecenderungan jangka panjang + tahapan terukur.",
+"Penyusunan internal tanpa perspektif pengguna menghasilkan kebijakan yang berorientasi pada penyedia."]},
+
+{c:5,q:"Standar waktu penyelesaian permintaan data di instansi Anda tidak pernah diukur, dan setiap unit menerapkan praktik berbeda. Tindakan level 4 adalah…",
+o:["Meminta setiap unit mencatat waktu penyelesaian permintaan data setiap bulan",
+"Menetapkan standar layanan instansi yang seragam beserta mekanisme pengukuran dan publikasi capaiannya, sehingga seluruh pengguna memperoleh kepastian layanan yang sama",
+"Menetapkan standar waktu hanya untuk permintaan data yang sering diajukan",
+"Meminta unit dengan waktu penyelesaian terbaik berbagi cara kerjanya kepada unit lain"],
+a:1,k:"Kepastian dan kesetaraan layanan dijamin oleh standar instansi yang diukur dan diumumkan.",
+w:"Indikator 4.2 menuntut kebijakan pelayanan publik instansi selaras dengan standar yang objektif dan transparan. Standar yang diukur dan dipublikasikan menciptakan akuntabilitas layanan bagi seluruh pengguna.",
+x:["Pencatatan menghasilkan data tanpa standar yang mengikat.",
+"Kunci. Standar seragam + pengukuran + publikasi capaian.",
+"Standar sebagian menyisakan ketidakpastian pada jenis permintaan lain.",
+"Berbagi praktik baik bermanfaat, tetapi tanpa standar hasilnya tetap beragam."]},
+
+{c:5,q:"Anda mengetahui akan ada perubahan besar dalam kebutuhan data akibat kebijakan nasional baru, yang akan menaikkan permintaan data wilayah kecil secara drastis dalam dua tahun. Tindakan level 4 adalah…",
+o:["Menyiapkan tambahan petugas layanan ketika permintaan mulai meningkat",
+"Menyampaikan informasi tersebut kepada pimpinan sebagai bahan pertimbangan",
+"Mengantisipasi sejak sekarang dengan menyiapkan kapasitas penyajian data wilayah kecil, aturan kerahasiaan yang menyertainya, dan kesiapan kompetensi pegawai, sebagai bagian dari kebijakan layanan instansi",
+"Menunggu permintaan nyata muncul agar penyiapan sumber daya tidak sia-sia"],
+a:2,k:"Memperhitungkan dan mengantisipasi dampak isu jangka panjang terhadap pelayanan.",
+w:"Indikator 4.1 menuntut memahami isu jangka panjang serta memperhitungkan dan mengantisipasi dampaknya terhadap pelaksanaan tugas pelayanan publik dalam lingkup organisasi. Menyiapkan kapasitas, aturan, dan kompetensi sebelum permintaan datang adalah wujudnya.",
+x:["Menambah petugas saat permintaan meningkat adalah reaksi, bukan antisipasi.",
+"Menyampaikan informasi tanpa tindakan berhenti pada tataran pelaporan.",
+"Kunci. Penyiapan kapasitas + aturan kerahasiaan + kompetensi sebelum kebutuhan muncul.",
+"Sikap menunggu bertentangan dengan tuntutan antisipatif pada level 4."]},
+
+{c:5,q:"Sejumlah pengguna menyampaikan bahwa penjelasan metodologi pada publikasi terlalu teknis sehingga hasil statistik sering ditafsirkan keliru di ruang publik. Tindakan level 4 adalah…",
+o:["Menambahkan glosarium istilah pada setiap publikasi",
+"Menyelenggarakan konferensi pers setiap kali terbit publikasi besar",
+"Menjadikan keterbacaan sebagai bagian dari standar diseminasi instansi — pedoman penulisan, uji keterbacaan sebelum terbit, dan penyediaan penjelasan berlapis sesuai kelompok pengguna",
+"Meminta unit teknis menyederhanakan bahasa pada bagian metodologi"],
+a:2,k:"Keterbacaan diangkat menjadi standar layanan instansi, bukan perbaikan kasus per kasus.",
+w:"Level 4 menjaga agar kebijakan pelayanan instansi memenuhi standar yang transparan dan profesional serta berfokus pada kebutuhan pengguna. Menjadikan keterbacaan sebagai standar yang diuji sebelum terbit adalah tindakan kebijakan.",
+x:["Glosarium membantu sebagian pembaca tetapi tidak mengubah cara penyajian.",
+"Konferensi pers memperluas jangkauan tanpa memperbaiki dokumen yang dibaca publik.",
+"Kunci. Pedoman + uji keterbacaan + penjelasan berlapis sebagai standar diseminasi.",
+"Permintaan menyederhanakan bahasa tanpa pedoman menghasilkan mutu yang tidak seragam."]},
+
+{c:6,q:"Anda memimpin unit dengan sebelas pegawai yang kompetensinya beragam. Selama ini pengembangan dilakukan dengan mengirim pegawai ke pelatihan yang tersedia. Tindakan Pengembangan Diri dan Orang Lain level 4 adalah…",
+o:["Mengirim lebih banyak pegawai ke pelatihan agar pemerataan kompetensi tercapai",
+"Menyusun program pengembangan jangka panjang bersama setiap pegawai — tujuan yang disepakati, penugasan bertahap, bimbingan, dan alokasi waktu pelatihan yang tertaut pada rencana karirnya",
+"Meminta setiap pegawai mengusulkan pelatihan yang ingin diikutinya setiap tahun",
+"Memberikan penugasan menantang kepada pegawai yang dinilai berpotensi"],
+a:1,k:"Program pengembangan jangka panjang disusun bersama pegawai, bukan sekadar pengiriman pelatihan.",
+w:"Indikator 4.1 menyebut menyusun program pengembangan jangka panjang bersama bawahan, termasuk penetapan tujuan, bimbingan, penugasan, pengalaman lain, serta alokasi waktu untuk pengembangan kompetensi dan karir. Empat unsur itu harus muncul bersama.",
+x:["Memperbanyak pengiriman pelatihan menambah kegiatan tanpa arah pengembangan.",
+"Kunci. Tujuan bersama + penugasan bertahap + bimbingan + alokasi waktu, tertaut rencana karir.",
+"Usulan dari pegawai tanpa kerangka bersama menghasilkan pengembangan yang terserak.",
+"Penugasan menantang adalah perilaku level 3, dan hanya menyasar sebagian pegawai."]},
+
+{c:6,q:"Instansi Anda mengirim banyak pegawai ke pelatihan setiap tahun, namun tidak diketahui apakah kompetensi benar-benar meningkat dan diterapkan. Tindakan level 4 adalah…",
+o:["Meminta setiap peserta pelatihan membuat laporan setelah kembali bertugas",
+"Menyelenggarakan pelatihan internal agar materinya lebih sesuai kebutuhan",
+"Menjalankan manajemen pembelajaran pada tataran organisasi — kebutuhan kompetensi dipetakan, pembelajaran dirancang, penerapannya dievaluasi, dan umpan baliknya dipakai memperbaiki program berikutnya",
+"Menyeleksi peserta pelatihan lebih ketat agar hanya pegawai yang relevan yang dikirim"],
+a:2,k:"Manajemen pembelajaran organisasi: petakan, rancang, evaluasi penerapan, umpan balik.",
+w:"Indikator 4.2 berbunyi melaksanakan manajemen pembelajaran termasuk evaluasi dan umpan balik pada tataran organisasi. Yang dievaluasi bukan kehadiran pelatihan, melainkan penerapan dan dampaknya pada kinerja.",
+x:["Laporan peserta adalah bukti administratif, bukan evaluasi penerapan.",
+"Pelatihan internal memperbaiki kesesuaian materi tanpa mengukur hasil pembelajaran.",
+"Kunci. Siklus lengkap manajemen pembelajaran pada tataran organisasi.",
+"Seleksi peserta memperbaiki masukan, tetapi tidak menjawab pertanyaan tentang hasil."]},
+
+{c:6,q:"Dua pegawai kunci di unit Anda akan memasuki masa pensiun dalam dua tahun, dan keahlian mereka tidak dimiliki pegawai lain. Tindakan level 4 adalah…",
+o:["Meminta keduanya menyusun dokumentasi pekerjaan sebelum pensiun",
+"Mengusulkan penambahan pegawai baru dengan kualifikasi serupa kepada bagian kepegawaian",
+"Menjalankan kaderisasi terencana — memilih calon penerus, menyusun jalur pengembangan bersama mereka, menugaskan pendampingan langsung oleh kedua pegawai kunci, dan mengevaluasi kesiapannya secara berkala",
+"Membagi tugas kedua pegawai tersebut kepada beberapa pegawai lain menjelang pensiun"],
+a:2,k:"Kaderisasi untuk posisi-posisi di unit kerja, dilakukan terencana dan dievaluasi.",
+w:"Indikator 4.3 menyebut mengembangkan orang-orang di sekitarnya secara konsisten dan melakukan kaderisasi untuk posisi-posisi di unit kerjanya. Kaderisasi menuntut calon penerus, jalur pengembangan, pendampingan, dan evaluasi kesiapan.",
+x:["Dokumentasi memindahkan pengetahuan tertulis, tetapi keahlian praktis tidak berpindah dengan sendirinya.",
+"Rekrutmen menyelesaikan jumlah pegawai, bukan kesinambungan keahlian dan pengalaman.",
+"Kunci. Calon penerus + jalur pengembangan + pendampingan langsung + evaluasi kesiapan.",
+"Pembagian tugas mendadak menyebarkan beban tanpa menyiapkan kompetensi."]},
+
+{c:6,q:"Seorang pegawai berkinerja baik menyampaikan bahwa ia merasa tidak berkembang dan mulai kehilangan motivasi. Respons level 4 adalah…",
+o:["Memberikan pujian atas kinerjanya dan meyakinkan bahwa peluang akan datang pada waktunya",
+"Mengikutsertakannya pada pelatihan terdekat yang tersedia",
+"Membahas bersama arah pengembangan jangka panjangnya, menyepakati tujuan dan penugasan bertahap yang menantang, serta menyediakan bimbingan dan waktu pengembangan yang tertaut pada rencana karirnya",
+"Memberinya tanggung jawab tambahan agar merasa lebih dipercaya"],
+a:2,k:"Menyusun program pengembangan jangka panjang bersama pegawai yang bersangkutan.",
+w:"Indikator 4.1 menuntut penyusunan program pengembangan jangka panjang bersama bawahan, mencakup tujuan, bimbingan, penugasan, dan alokasi waktu. Kata 'bersama' menegaskan bahwa arah pengembangan disepakati, bukan ditentukan sepihak.",
+x:["Pujian dan janji tidak menjawab kebutuhan berkembang yang disampaikan.",
+"Pelatihan yang kebetulan tersedia belum tentu selaras dengan arah pengembangannya.",
+"Kunci. Arah jangka panjang disepakati + penugasan bertahap + bimbingan + waktu pengembangan.",
+"Tambahan tanggung jawab tanpa arah dan bimbingan berisiko dirasakan sebagai beban."]},
+
+{c:6,q:"Anda ingin memastikan pembelajaran tidak berhenti pada individu yang dikirim pelatihan. Langkah level 4 yang paling tepat adalah…",
+o:["Mewajibkan peserta pelatihan berbagi materi kepada rekan sekerjanya",
+"Membangun mekanisme berbagi pengetahuan yang melekat pada organisasi — forum belajar berkala, penugasan sebagai pengajar internal, repositori pengetahuan, dan evaluasi pemanfaatannya",
+"Menyimpan seluruh materi pelatihan pada penyimpanan bersama yang dapat diakses pegawai",
+"Mengirim lebih dari satu pegawai pada setiap pelatihan agar pengetahuan tidak terpusat"],
+a:1,k:"Manajemen pembelajaran pada tataran organisasi, lengkap dengan evaluasi pemanfaatan.",
+w:"Indikator 4.2 menuntut pelaksanaan manajemen pembelajaran termasuk evaluasi dan umpan balik pada tataran organisasi. Mekanisme yang melekat pada organisasi membuat pengetahuan bertahan meskipun personelnya berganti.",
+x:["Kewajiban berbagi mudah berubah menjadi formalitas tanpa forum dan evaluasi.",
+"Kunci. Forum belajar + pengajar internal + repositori + evaluasi pemanfaatan.",
+"Penyimpanan materi menyediakan akses, tetapi tidak menjamin pembelajaran terjadi.",
+"Mengirim lebih banyak peserta menaikkan biaya tanpa mekanisme penyebaran pengetahuan."]},
+
+{c:6,q:"Seorang koordinator di unit Anda pandai secara teknis namun enggan membimbing anggotanya karena merasa lebih cepat mengerjakan sendiri. Tindakan level 4 adalah…",
+o:["Membiarkannya karena hasil pekerjaan unitnya tetap baik dan tepat waktu",
+"Memindahkan sebagian anggota kepada koordinator lain yang lebih bersedia membimbing",
+"Menjadikan pengembangan anggota sebagai bagian dari sasaran kinerja koordinator, membimbingnya dalam teknik pendampingan, dan mengevaluasi kemajuan anggotanya secara berkala",
+"Meminta koordinator tersebut menyampaikan materi teknis pada rapat unit setiap bulan"],
+a:2,k:"Mengembangkan orang lain secara konsisten, termasuk mengembangkan kemampuan atasan menengah untuk membina.",
+w:"Indikator 4.3 menuntut pengembangan orang-orang di sekitar secara konsisten. Level 4 bekerja melalui para koordinator: menjadikan pembinaan sebagai kinerja, membekali caranya, lalu mengevaluasi hasilnya pada anggota.",
+x:["Membiarkan berarti mengorbankan keberlanjutan demi hasil jangka pendek.",
+"Pemindahan anggota menghindari persoalan tanpa mengembangkan koordinatornya.",
+"Kunci. Pembinaan masuk sasaran kinerja + pembekalan teknik + evaluasi kemajuan anggota.",
+"Pemaparan materi bulanan bukan pembimbingan, dan tidak mengubah pola kerja sendiri."]},
+
+{c:6,q:"Hasil penilaian kompetensi menunjukkan sebagian besar pegawai lemah pada analisis data lanjutan, padahal kebutuhan instansi ke depan justru di bidang itu. Tindakan level 4 adalah…",
+o:["Mengusulkan pelatihan analisis data bagi seluruh pegawai kepada bagian kepegawaian",
+"Menyusun program pengembangan berjangka beberapa tahun dengan tahapan kompetensi, penugasan nyata sebagai sarana belajar, pendampingan, dan evaluasi berkala pada tataran organisasi",
+"Merekrut tenaga baru yang menguasai analisis data untuk mengisi kesenjangan",
+"Memberikan akses kursus daring kepada seluruh pegawai agar dapat belajar mandiri"],
+a:1,k:"Kesenjangan kompetensi strategis dijawab dengan program berjangka, bukan satu kegiatan pelatihan.",
+w:"Indikator 4.1 dan 4.2 bertemu: menyusun program pengembangan jangka panjang dan melaksanakan manajemen pembelajaran pada tataran organisasi. Penugasan nyata sebagai sarana belajar adalah unsur yang membedakannya dari pelatihan biasa.",
+x:["Usulan pelatihan tunggal jarang menutup kesenjangan kompetensi yang mendasar.",
+"Kunci. Program berjangka + tahapan kompetensi + penugasan nyata + evaluasi organisasi.",
+"Rekrutmen menambah kapasitas sesaat tanpa mengembangkan pegawai yang ada.",
+"Akses kursus mandiri tanpa tahapan dan pendampingan menghasilkan penyelesaian yang tidak merata."]},
+
+{c:6,q:"Anda diminta menyiapkan calon-calon pengganti untuk posisi koordinator di unit Anda dalam tiga tahun ke depan. Pendekatan level 4 adalah…",
+o:["Menunjuk pegawai paling senior sebagai calon pengganti untuk setiap posisi",
+"Menunggu proses penilaian kompetensi dari bagian kepegawaian sebagai dasar penunjukan",
+"Mengidentifikasi calon berdasarkan potensi dan kinerja, menyusun jalur pengembangan yang berbeda untuk tiap calon, memberi penugasan yang menyerupai tanggung jawab jabatan, dan mengevaluasi kesiapannya secara berkala",
+"Memberikan kesempatan yang sama kepada seluruh pegawai untuk mengikuti pelatihan kepemimpinan"],
+a:2,k:"Kaderisasi berbasis potensi, dengan jalur pengembangan individual dan penugasan menyerupai jabatan.",
+w:"Indikator 4.3 menuntut kaderisasi untuk posisi-posisi di unit kerja. Kaderisasi yang efektif memadukan seleksi berbasis potensi, jalur pengembangan yang berbeda tiap orang, dan penugasan yang mendekati kenyataan jabatan.",
+x:["Senioritas bukan ukuran kesiapan memimpin dan mengabaikan potensi pegawai lain.",
+"Menunggu proses pihak lain melepaskan tanggung jawab pengembangan yang melekat pada Anda.",
+"Kunci. Seleksi berbasis potensi + jalur individual + penugasan menyerupai jabatan + evaluasi berkala.",
+"Kesempatan merata bersifat adil, tetapi bukan kaderisasi yang terarah pada posisi tertentu."]},
+
+{c:6,q:"Seorang pegawai gagal menyelesaikan penugasan pengembangan yang Anda berikan dan tampak kehilangan kepercayaan diri. Respons level 4 adalah…",
+o:["Mengalihkan penugasan tersebut kepada pegawai lain yang lebih mampu",
+"Memberikan umpan balik yang jujur namun membangun, meninjau ulang tahapan pengembangannya bersama yang bersangkutan, dan menyiapkan penugasan berikutnya dengan tingkat tantangan serta pendampingan yang disesuaikan",
+"Mengurangi tingkat kesulitan penugasan berikutnya agar ia tidak gagal lagi",
+"Menyampaikan bahwa kegagalan adalah hal biasa dan memintanya tidak berkecil hati"],
+a:1,k:"Umpan balik jujur, peninjauan program bersama, dan penyesuaian tantangan serta pendampingan.",
+w:"Indikator 4.1 menyebut penyusunan program pengembangan bersama bawahan yang mencakup bimbingan dan penugasan, sedangkan 4.2 menekankan evaluasi dan umpan balik. Kegagalan adalah titik evaluasi, bukan alasan menghentikan pengembangan.",
+x:["Pengalihan tugas menyelamatkan pekerjaan tetapi menghentikan proses belajar pegawai.",
+"Kunci. Umpan balik membangun + peninjauan ulang bersama + tantangan dan pendampingan yang disesuaikan.",
+"Menurunkan tantangan secara permanen menutup peluang pegawai mencapai kemampuan yang dituju.",
+"Penghiburan menjaga perasaan, tetapi tidak memberi arah perbaikan."]},
+
+{c:6,q:"Anda menyadari kemampuan Anda sendiri dalam analisis kebijakan berbasis data tertinggal dari tuntutan jabatan yang sedang Anda emban. Tindakan level 4 adalah…",
+o:["Mengandalkan staf yang menguasai bidang tersebut untuk menutupi keterbatasan Anda",
+"Mengikuti pelatihan yang tersedia ketika ada kesempatan dan anggaran",
+"Menyusun rencana pengembangan diri yang terukur sekaligus mengaitkannya dengan program pengembangan unit, sehingga peningkatan kemampuan Anda dan pegawai berjalan sebagai satu manajemen pembelajaran",
+"Membaca literatur dan mempelajari praktik daerah lain di sela waktu kerja"],
+a:2,k:"Pengembangan diri pemimpin ditautkan pada manajemen pembelajaran organisasi.",
+w:"Level 4 tidak meniadakan pengembangan diri, tetapi menempatkannya dalam kerangka organisasi. Mengaitkan rencana pribadi dengan program unit membuat pembelajaran menjadi budaya, bukan usaha perorangan.",
+x:["Mengandalkan staf menutupi kesenjangan sesaat dan melemahkan kepemimpinan substantif.",
+"Mengikuti pelatihan bila ada kesempatan adalah perilaku level 1 yang bersifat menunggu.",
+"Kunci. Rencana pengembangan diri yang terukur + tertaut pada manajemen pembelajaran unit.",
+"Belajar mandiri adalah perilaku level 1; belum menyentuh tataran organisasi."]},
+
+{c:6,q:"Program pengembangan pegawai di instansi Anda berjalan, namun tidak pernah ditinjau apakah masih sesuai dengan arah organisasi. Tindakan level 4 adalah…",
+o:["Melanjutkan program yang ada karena sudah berjalan dan diterima pegawai",
+"Menetapkan siklus peninjauan berkala yang menautkan program pengembangan dengan kebutuhan kompetensi organisasi ke depan, disertai evaluasi hasil dan umpan balik untuk penyesuaian program",
+"Menambah jenis pelatihan baru setiap tahun agar program tetap segar",
+"Menanyakan kepuasan peserta terhadap program yang telah berjalan"],
+a:1,k:"Manajemen pembelajaran mensyaratkan evaluasi dan umpan balik pada tataran organisasi.",
+w:"Indikator 4.2 menyebut evaluasi dan umpan balik pada tataran organisasi. Program pengembangan harus ditinjau terhadap kebutuhan kompetensi organisasi, bukan hanya terhadap kepuasan peserta.",
+x:["Melanjutkan tanpa peninjauan membiarkan program menjauh dari kebutuhan organisasi.",
+"Kunci. Siklus peninjauan + penautan pada kebutuhan kompetensi + umpan balik penyesuaian.",
+"Menambah jenis pelatihan menambah pilihan tanpa memastikan relevansi.",
+"Kepuasan peserta adalah ukuran pengalaman, bukan ukuran kesesuaian dengan arah organisasi."]}
+];
+
+// Bagian 4 — Mengelola Perubahan (7) & Pengambilan Keputusan (8)
+const A4 = [
+{c:7,q:"Instansi Anda akan beralih dari pencacahan berbasis kertas ke pencacahan berbasis aplikasi secara menyeluruh. Sebagian besar petugas berusia di atas 45 tahun dan terbiasa dengan cara lama. Tindakan Mengelola Perubahan level 4 adalah…",
+o:["Menyelenggarakan pelatihan aplikasi bagi seluruh petugas sebelum pelaksanaan dimulai",
+"Mengarahkan seluruh unit menyiapkan peralihan disertai pemetaan risiko — kesiapan perangkat, jaringan, kompetensi petugas, dan rencana cadangan — serta memastikan penerapannya diperiksa secara berkala",
+"Menerapkan aplikasi secara bertahap dimulai dari petugas yang sudah terbiasa dengan teknologi",
+"Menyediakan pendamping teknis di setiap kabupaten selama masa peralihan"],
+a:1,k:"Memimpin perubahan berarti menyiapkan unit sekaligus memitigasi risikonya.",
+w:"Indikator 4.1 menyebut mengarahkan unit kerja agar lebih siap menghadapi perubahan termasuk memitigasi risiko yang mungkin terjadi, dan 4.2 memastikan perubahan diterapkan secara aktif secara berkala. Pilihan lain adalah bagian dari jawaban ini, bukan keseluruhannya.",
+x:["Pelatihan adalah satu unsur kesiapan; risiko perangkat, jaringan, dan rencana cadangan belum tertangani.",
+"Kunci. Pemetaan risiko menyeluruh + rencana cadangan + pemeriksaan penerapan berkala.",
+"Penerapan bertahap adalah taktik yang baik, tetapi belum mencakup mitigasi risiko dan pemantauan.",
+"Pendamping teknis meredam gejala di lapangan tanpa menyiapkan unit secara sistematis."]},
+
+{c:7,q:"Enam bulan setelah kebijakan kerja berbasis digital diberlakukan, sebagian unit kembali ke kebiasaan lama karena dianggap lebih cepat. Tindakan level 4 adalah…",
+o:["Menerbitkan kembali surat edaran yang menegaskan kewajiban penerapan kebijakan",
+"Memeriksa penerapan kebijakan di setiap unit secara berkala, menelusuri hambatan nyata yang membuat unit kembali ke cara lama, memperbaiki hambatan tersebut, dan memastikan penerapan berjalan konsisten",
+"Memberikan teguran kepada unit yang tidak menerapkan kebijakan",
+"Menerima kondisi tersebut selama hasil pekerjaan unit tetap tercapai"],
+a:1,k:"Memastikan perubahan benar-benar diterapkan secara aktif dan berkala, bukan sekadar diperintahkan.",
+w:"Indikator 4.2 menyebut memastikan perubahan sudah diterapkan secara aktif di lingkup unit kerjanya secara berkala. Kemunduran ke cara lama hampir selalu punya sebab praktis yang harus ditemukan dan diperbaiki.",
+x:["Surat edaran mengulang instruksi tanpa menyentuh sebab kemunduran.",
+"K
